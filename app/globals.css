@@ -1,0 +1,905 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Tokens — HANDOFF.md section 3. Every value here is lifted from
+   design-reference/Krishnadham.dc.html. Nothing is invented.
+   --------------------------------------------------------------------------- */
+
+@theme {
+  /* Palette */
+  --color-ivory: #f8f6f1;
+  --color-forest: #17342c;
+  --color-forest-deep: #0f211c;
+  --color-champagne: #b08d57;
+  --color-charcoal: #242424;
+  --color-white: #ffffff;
+  --color-muted: #5c5a55; /* secondary text */
+  --color-rule: #e2ddd2; /* hairlines on ivory */
+  --color-card-rule: #e9e4d9; /* card borders */
+
+  /* Extended ground shades used by the prototype */
+  --color-ink: #3a3833; /* body copy on ivory, softer than charcoal */
+  --color-sand: #ede8dd; /* image-band ground */
+  --color-field-rule: #ddd7c9; /* form hairline */
+  --color-ghost-rule: #c9c2b2; /* ghost button border on ivory */
+  --color-night: #0c0f0e; /* loader ground */
+  --color-forest-panel: #14231f; /* second forest panel */
+  --color-danger: #8c4a3a; /* delete action, desk only */
+
+  /* Type */
+  --font-display: var(--font-playfair), "Playfair Display", serif;
+  --font-body: var(--font-inter), Inter, sans-serif;
+
+  /* Type scale — HANDOFF.md section 3 */
+  --text-display-xl: clamp(46px, 7.2vw, 104px);
+  --text-display-l: clamp(42px, 6.4vw, 92px);
+  --text-display-m: clamp(34px, 4.45vw, 64px);
+  --text-display-s: 30px;
+  --text-body-l: 19px;
+  --text-body: 16.5px;
+  --text-small: 14px;
+  --text-label: 11px;
+
+  /* Spacing — base unit 8, gutter 32 */
+  --spacing: 8px;
+  --section-y: clamp(96px, 12.5vw, 180px);
+  /* Inner pages (about, committee, notices, contact) sit slightly tighter. */
+  --section-y-inner: clamp(90px, 11vw, 160px);
+  --section-x: clamp(24px, 7.2vw, 104px);
+  --nav-x: clamp(20px, 4.4vw, 64px);
+
+  /* Motion — lib/motion.ts holds the GSAP-side equivalents */
+  --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1); /* expo.out */
+  --ease-transition: cubic-bezier(0.87, 0, 0.13, 1); /* expo.inOut */
+}
+
+/* ---------------------------------------------------------------------------
+   Base — from the prototype <style> block.
+   --------------------------------------------------------------------------- */
+
+html {
+  scroll-behavior: auto;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+  background: var(--color-ivory);
+  color: var(--color-charcoal);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--color-champagne);
+}
+
+::selection {
+  background: #e3d6bf;
+}
+
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  outline: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: rgba(36, 36, 36, 0.3);
+}
+
+/* The custom cursor replaces the system cursor on pointer devices only.
+   Under (hover: none) the cursor chrome is not rendered at all, so the
+   system cursor must stay. */
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: none;
+  }
+}
+
+/* The custom cursor must never be the only affordance — HANDOFF section 8. */
+:focus-visible {
+  outline: 1px solid var(--color-champagne);
+  outline-offset: 4px;
+}
+
+/* Reduced motion lands every element composed. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body.is-locked {
+  overflow: hidden;
+}
+
+/* ===========================================================================
+   CHROME — Nav, notice-board menu, mobile panel, Footer.
+
+   Every value below is lifted verbatim from the prototype's inline styles.
+   The prototype was authored at 1440 only (its own preview props say so), so
+   the three breakpoints here are layout re-flows of those same values —
+   no new colour, size, tracking, easing or duration is introduced.
+
+     >= 1024px  desktop, exactly as the prototype draws it
+     768-1023   tablet: nav unchanged, notice menu drops to two columns,
+                footer stacks
+     < 768px    mobile: nav collapses to brand + Menu, one stacked panel
+   =========================================================================== */
+
+/* --- Nav -------------------------------------------------------------- */
+
+.nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 200;
+  display: grid;
+  grid-template-columns: minmax(0, 260px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(16px, 2vw, 40px);
+  padding: 26px var(--nav-x);
+  color: #f8f6f1;
+}
+
+.nav__frost {
+  position: absolute;
+  inset: 0;
+  background: rgba(248, 246, 241, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid rgba(36, 36, 36, 0.08);
+  opacity: 0;
+}
+
+.nav__brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nav__brand-name {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(15px, 1.32vw, 19px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nav__brand-sub {
+  font-size: clamp(7px, 0.6vw, 8.5px);
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(248, 246, 241, 0.62);
+}
+
+.nav__links {
+  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: clamp(9px, 1.7vw, 34px);
+  min-width: 0;
+  font-size: clamp(8px, 0.73vw, 10.5px);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.nav__link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  cursor: inherit;
+}
+
+.nav__login {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 26px;
+  padding: 13px clamp(14px, 1.5vw, 22px);
+  border: 1px solid currentColor;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.nav__login-ink {
+  position: relative;
+  font-size: clamp(9px, 0.73vw, 10.5px);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* The mobile toggle. Uses the Label token (11px / 500 / 0.24em) that the
+   design system already defines — nothing invented. */
+.nav__toggle {
+  position: relative;
+  display: none;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: inherit;
+  cursor: inherit;
+}
+
+.nav__toggle-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 18px;
+}
+
+.nav__toggle-bars span {
+  height: 1px;
+  background: currentColor;
+  transform-origin: left center;
+}
+
+/* --- Frosted panel, shared by the notice menu and the mobile panel ----- */
+
+.panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  padding: 0 var(--nav-x);
+  opacity: 0;
+  transform: translateY(-14px);
+  pointer-events: none;
+  transition:
+    opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel.is-open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.panel__surface {
+  background: rgba(36, 36, 36, 0.1);
+  background-color: rgba(248, 246, 241, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(36, 36, 36, 0.1);
+  border-top: 0;
+  box-shadow: 0 30px 70px -50px rgba(23, 52, 44, 0.55);
+  overflow: hidden;
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.panel.is-open .panel__surface {
+  clip-path: inset(0% 0 0 0);
+}
+
+/* --- Notice-board dropdown ---------------------------------------------
+   A compact panel anchored under its nav item. Replaces the prototype's
+   full-width frosted panel at the client's request; the mobile stacked panel
+   below still uses the prototype's own cards.
+
+   Only opacity and transform animate. 220ms sits in the 200-250ms the client
+   asked for and matches the site's hover timings.
+   ---------------------------------------------------------------------- */
+
+.nav__has-menu {
+  position: relative;
+  display: flex;
+}
+
+.nmenu {
+  position: absolute;
+  top: calc(100% + 16px);
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 320px;
+  padding: 10px;
+  background: #ffffff;
+  border: 1px solid var(--color-card-rule);
+  border-radius: 14px;
+  /* Two shadows: a wide soft lift, and a tight one so the edge stays defined
+     against ivory. */
+  box-shadow:
+    0 28px 60px -30px rgba(23, 52, 44, 0.34),
+    0 2px 8px -4px rgba(23, 52, 44, 0.1);
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) translateY(-6px);
+  transition:
+    opacity 220ms var(--ease-reveal),
+    transform 220ms var(--ease-reveal),
+    visibility 0s linear 220ms;
+}
+
+.nmenu.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  transition:
+    opacity 220ms var(--ease-reveal),
+    transform 220ms var(--ease-reveal),
+    visibility 0s;
+}
+
+/* Bridges the gap between trigger and panel so the pointer never crosses dead
+   space on the way down — without this the panel flickers shut mid-travel. */
+.nmenu::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -16px;
+  height: 16px;
+}
+
+.nmenu__item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 13px 16px 14px 20px;
+  border-radius: 10px;
+  background-color: rgba(248, 246, 241, 0);
+  transition: background-color 220ms var(--ease-reveal);
+}
+
+.nmenu__item:hover,
+.nmenu__item:focus-visible {
+  background-color: var(--color-ivory);
+}
+
+/* Left accent — scales from the centre, so only transform animates. */
+.nmenu__item::after {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  width: 2px;
+  height: 24px;
+  margin-top: -12px;
+  border-radius: 1px;
+  background: var(--color-champagne);
+  transform: scaleY(0);
+  transition: transform 220ms var(--ease-reveal);
+}
+
+.nmenu__item:hover::after,
+.nmenu__item:focus-visible::after {
+  transform: scaleY(1);
+}
+
+.nmenu__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.nmenu__label {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 17px;
+  line-height: 1.25;
+  color: var(--color-forest);
+}
+
+.nmenu__count {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  color: var(--color-champagne);
+}
+
+.nmenu__note {
+  font-size: 12.5px;
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--color-muted);
+}
+
+/* A link inherits the nav's gold hover colour; these items own their palette. */
+.nmenu__item:hover .nmenu__label,
+.nmenu__item:focus-visible .nmenu__label {
+  color: var(--color-forest);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nmenu,
+  .nmenu__item,
+  .nmenu__item::after {
+    transition-duration: 0.01ms;
+  }
+}
+
+/* --- Notice-board cards (mobile panel) --------------------------------- */
+
+.menu__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+}
+
+.menu__item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 34px;
+  min-height: 168px;
+  padding: 26px 24px 24px;
+  background-color: rgba(255, 255, 255, 0);
+  color: #17342c;
+  text-transform: none;
+}
+
+.menu__count {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #b08d57;
+}
+
+.menu__label {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+
+.menu__note {
+  font-size: 12.5px;
+  font-weight: 300;
+  line-height: 1.65;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #5c5a55;
+}
+
+/* --- Mobile panel ------------------------------------------------------ */
+
+.mobile__scroll {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 92px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.mobile__links {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile__link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(36, 36, 36, 0.1);
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 25px;
+  line-height: 1.15;
+  color: #17342c;
+}
+
+.mobile__eyebrow {
+  padding: 26px 24px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #b08d57;
+}
+
+.mobile__foot {
+  padding: 24px;
+}
+
+/* --- Footer ------------------------------------------------------------ */
+
+.footer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(30px, 4vw, 60px);
+  padding: clamp(56px, 6.2vw, 90px) var(--section-x) 44px;
+  background: #0f211c;
+  color: rgba(248, 246, 241, 0.6);
+}
+
+.footer__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer__brand-name {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: 34px;
+  color: #f8f6f1;
+}
+
+.footer__brand-sub {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.footer__nav {
+  display: flex;
+  gap: 60px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* --- Tablet ------------------------------------------------------------ */
+
+@media (max-width: 1023px) {
+  /* Four columns of Playfair 25px will not sit in a tablet width. */
+  .menu__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .menu__item {
+    min-height: 148px;
+  }
+
+  .footer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .footer__nav {
+    flex-wrap: wrap;
+    gap: 24px 40px;
+  }
+}
+
+/* --- Nav collapse ------------------------------------------------------
+   The five nowrap links need 274px; a 768px portrait tablet leaves 260px
+   once the scrollbar is counted. 900px is the first width where the row
+   fits with room to spare, so that is where the nav collapses. Phones and
+   portrait tablets take the stacked panel; landscape tablets and desktops
+   keep the prototype's nav.
+   ---------------------------------------------------------------------- */
+
+@media (max-width: 899px) {
+  .nav {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .nav__links,
+  .nav__login {
+    display: none;
+  }
+
+  .nav__toggle {
+    display: inline-flex;
+  }
+}
+
+/* --- Mobile ------------------------------------------------------------ */
+
+@media (max-width: 767px) {
+  .menu__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .menu__item {
+    min-height: 0;
+    gap: 20px;
+  }
+
+  .footer__nav {
+    gap: 24px 40px;
+  }
+}
+
+/* ===========================================================================
+   PAGE LAYOUT
+
+   The recurring grids. Every value is the prototype's; the breakpoints only
+   re-flow them, because a 260px label column and a 400px minimum band cannot
+   both survive a 390px phone. Collapse happens at 900px to match the nav.
+   =========================================================================== */
+
+/* Hero — minmax(0,1fr) / minmax(0,340px), bottom aligned. */
+.hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 340px);
+  gap: clamp(32px, 5.5vw, 80px);
+  align-items: end;
+}
+
+/* The label / content split used by every page section. */
+.section-split {
+  display: grid;
+  grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+  gap: clamp(36px, 6.2vw, 90px);
+  padding: var(--section-y) var(--section-x);
+}
+
+/* Inner pages sit slightly tighter than home — clamp(90px, 11vw, 160px). */
+.section-split--inner {
+  padding: var(--section-y-inner) var(--section-x);
+}
+
+/* Copy beside a full-height band. */
+.band-split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  align-items: stretch;
+  background: #17342c;
+  color: #f8f6f1;
+}
+
+.band-split__copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 40px;
+  padding: clamp(96px, 12.5vw, 180px) clamp(28px, 6vw, 90px)
+    clamp(96px, 12.5vw, 180px) clamp(24px, 7.2vw, 104px);
+}
+
+/* Trailing actions on a document row. */
+.row__actions {
+  flex: 0 0 auto;
+  margin-left: auto;
+  display: flex;
+  justify-content: flex-end;
+  gap: 26px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* The notice board sets its pair 28px apart rather than 26px. */
+.row__actions--wide {
+  gap: 28px;
+}
+
+/* A label / value line — registration table, contact details. */
+.detail-row {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: clamp(20px, 2.8vw, 40px);
+  align-items: baseline;
+  padding: 30px 0;
+  border-top: 1px solid #e2ddd2;
+}
+
+.detail-row--contact {
+  grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+  padding: 34px 0;
+}
+
+.detail-row__label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #5c5a55;
+}
+
+.detail-row__value {
+  font-family: var(--font-display);
+  font-size: 28px;
+}
+
+@media (max-width: 899px) {
+  .hero__grid,
+  .section-split,
+  .detail-row,
+  .detail-row--contact {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hero__grid {
+    gap: 40px;
+  }
+
+  /* A 400px minimum leaves the band-split stranded on a 390px phone. */
+  .band-split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .band-split__copy {
+    padding: var(--section-y) var(--section-x);
+  }
+
+  .detail-row,
+  .detail-row--contact {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .row__actions {
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+}
+
+/* ===========================================================================
+   LOGIN + SECRETARY DESK
+   =========================================================================== */
+
+.login {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 640px);
+  min-height: 100vh;
+  background: #17342c;
+  color: #f8f6f1;
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 46px;
+  padding: clamp(80px, 8vw, 120px) clamp(32px, 6.2vw, 90px);
+  background: #f8f6f1;
+  color: #242424;
+}
+
+.desk {
+  display: grid;
+  grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.desk__side {
+  display: flex;
+  flex-direction: column;
+  gap: 60px;
+  /* 130px clears the fixed nav, which the desk keeps. */
+  padding: 130px 40px 60px;
+  background: #17342c;
+  color: #f8f6f1;
+}
+
+.desk__main {
+  display: flex;
+  flex-direction: column;
+  gap: 70px;
+  padding: clamp(110px, 10vw, 140px) clamp(32px, 6.2vw, 90px) 100px;
+}
+
+.desk__form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: clamp(30px, 4vw, 60px);
+  align-items: start;
+}
+
+/* One committee member: designation, name, flat, and the remove action. */
+.committee-editor__row {
+  display: grid;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr) minmax(0, 200px) auto;
+  gap: clamp(20px, 2.8vw, 40px);
+  align-items: end;
+}
+
+.committee-editor__actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 12px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 1279px) {
+  .committee-editor__row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .committee-editor__actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 899px) {
+  /* The 640px form column and the 260px desk rail both outgrow a phone. */
+  .login,
+  .desk {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .login__form {
+    padding: var(--section-y) var(--section-x);
+  }
+
+  /* Stacked, the band needs its own height — it no longer fills a grid row. */
+  .login > :first-child {
+    min-height: 60vh;
+  }
+
+  .desk__side {
+    gap: 40px;
+    padding: 120px var(--section-x) 48px;
+  }
+
+  .desk__main {
+    padding: var(--section-y-inner) var(--section-x) 80px;
+  }
+
+  /* A 340px minimum track is wider than a 390px viewport once the section
+     gutters are taken, so auto-fit would overflow the main column. */
+  .desk__form {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

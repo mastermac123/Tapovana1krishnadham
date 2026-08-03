@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  body { margin: 0; background: #E7E3DA; cursor: none; }
+  a { color: #17342C; text-decoration: none; }
+  a:hover { color: #B08D57; }
+  ::selection { background: #E3D6BF; }
+</style>
+</helmet>
+
+<div data-cursor-ring style="position: fixed; left: 0; top: 0; z-index: 999; width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1px solid rgba(23, 52, 44, 0.4); border-radius: 50%; pointer-events: none; will-change: transform;"></div>
+<div data-cursor-dot style="position: fixed; left: 0; top: 0; z-index: 999; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; background: #17342C; border-radius: 50%; pointer-events: none; will-change: transform;"></div>
+
+<div style="width: 1440px; background: #F8F6F1; color: #242424; font-family: Inter, sans-serif;">
+
+  <div style="position: relative; display: flex; flex-direction: column; justify-content: space-between; min-height: 820px; padding: 72px 104px 88px; background: #17342C; color: #F8F6F1; overflow: hidden;">
+    <div data-parallax="0.08" style="position: absolute; right: -60px; top: -40px; width: 620px; height: 620px; border: 1px solid rgba(176, 141, 87, 0.22); border-radius: 50%;"></div>
+    <div style="position: relative; display: flex; align-items: flex-start; justify-content: space-between;">
+      <div data-reveal style="display: flex; flex-direction: column; gap: 6px;">
+        <span style="font-family: 'Playfair Display', serif; font-size: 19px; letter-spacing: 0.3em; text-transform: uppercase;">Tapovan A&#8209;1</span>
+        <span style="font-size: 10.5px; font-weight: 400; letter-spacing: 0.34em; text-transform: uppercase; color: #B08D57;">Krishnadham</span>
+      </div>
+      <span data-reveal style="font-size: 10.5px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(248, 246, 241, 0.5);">Document 01 &mdash; Foundations</span>
+    </div>
+    <div style="position: relative; display: flex; flex-direction: column; gap: 44px; max-width: 1000px;">
+      <div data-reveal style="display: flex; flex-direction: column; gap: 30px;">
+        <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">Design system</span>
+        <h1 style="margin: 0; font-family: 'Playfair Display', serif; font-weight: 300; font-size: 104px; line-height: 0.98; letter-spacing: -0.02em;">The language before the building.</h1>
+      </div>
+      <div data-reveal style="display: grid; grid-template-columns: 1fr 320px; gap: 80px; align-items: end; padding-top: 40px; border-top: 1px solid rgba(248, 246, 241, 0.18);">
+        <p style="margin: 0; max-width: 560px; font-size: 18px; font-weight: 300; line-height: 1.8; color: rgba(248, 246, 241, 0.72); text-wrap: pretty;">Every rule that follows exists so the society&rsquo;s digital home can be quiet, exact and unhurried &mdash; a document you read rather than an interface you operate.</p>
+        <div style="display: flex; flex-direction: column; gap: 10px; font-size: 11px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(248, 246, 241, 0.5);">
+          <span>Ivory &middot; Forest &middot; Champagne</span>
+          <span>Playfair Display &middot; Inter</span>
+          <span>Expo eases &middot; masked reveals</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 260px 1fr; gap: 90px; padding: 150px 104px; border-bottom: 1px solid #E2DDD2;">
+    <div data-reveal style="display: flex; flex-direction: column; gap: 14px;">
+      <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">01 &mdash; Palette</span>
+      <p style="margin: 0; font-size: 15px; font-weight: 300; line-height: 1.8; color: #5C5A55;">Five values, no more. Green carries authority, champagne carries occasion, ivory carries everything else.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 2px;">
+      <div data-reveal style="display: grid; grid-template-columns: 220px 1fr 200px; gap: 40px; align-items: center; padding: 26px 0; border-top: 1px solid #E2DDD2;">
+        <div style="height: 96px; background: #F8F6F1; border: 1px solid #E2DDD2;"></div>
+        <div style="display: flex; flex-direction: column; gap: 8px;"><span style="font-family: 'Playfair Display', serif; font-size: 30px;">Warm Ivory</span><span style="font-size: 14px; font-weight: 300; color: #5C5A55;">Page ground. 78% of every screen.</span></div>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-align: right; color: #5C5A55;">#F8F6F1</span>
+      </div>
+      <div data-reveal style="display: grid; grid-template-columns: 220px 1fr 200px; gap: 40px; align-items: center; padding: 26px 0; border-top: 1px solid #E2DDD2;">
+        <div style="height: 96px; background: #17342C;"></div>
+        <div style="display: flex; flex-direction: column; gap: 8px;"><span style="font-family: 'Playfair Display', serif; font-size: 30px;">Deep Forest Green</span><span style="font-size: 14px; font-weight: 300; color: #5C5A55;">Full&#8209;bleed anchors, primary buttons, footer.</span></div>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-align: right; color: #5C5A55;">#17342C</span>
+      </div>
+      <div data-reveal style="display: grid; grid-template-columns: 220px 1fr 200px; gap: 40px; align-items: center; padding: 26px 0; border-top: 1px solid #E2DDD2;">
+        <div style="height: 96px; background: #B08D57;"></div>
+        <div style="display: flex; flex-direction: column; gap: 8px;"><span style="font-family: 'Playfair Display', serif; font-size: 30px;">Champagne Gold</span><span style="font-size: 14px; font-weight: 300; color: #5C5A55;">Eyebrow labels, hairline accents, one detail per section.</span></div>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-align: right; color: #5C5A55;">#B08D57</span>
+      </div>
+      <div data-reveal style="display: grid; grid-template-columns: 220px 1fr 200px; gap: 40px; align-items: center; padding: 26px 0; border-top: 1px solid #E2DDD2;">
+        <div style="height: 96px; background: #242424;"></div>
+        <div style="display: flex; flex-direction: column; gap: 8px;"><span style="font-family: 'Playfair Display', serif; font-size: 30px;">Charcoal</span><span style="font-size: 14px; font-weight: 300; color: #5C5A55;">Body copy. Never pure black.</span></div>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-align: right; color: #5C5A55;">#242424</span>
+      </div>
+      <div data-reveal style="display: grid; grid-template-columns: 220px 1fr 200px; gap: 40px; align-items: center; padding: 26px 0; border-top: 1px solid #E2DDD2; border-bottom: 1px solid #E2DDD2;">
+        <div style="height: 96px; background: #FFFFFF; border: 1px solid #E2DDD2;"></div>
+        <div style="display: flex; flex-direction: column; gap: 8px;"><span style="font-family: 'Playfair Display', serif; font-size: 30px;">White</span><span style="font-size: 14px; font-weight: 300; color: #5C5A55;">Document surfaces only &mdash; PDF cards, forms.</span></div>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-align: right; color: #5C5A55;">#FFFFFF</span>
+      </div>
+      <div data-reveal style="display: flex; gap: 40px; padding-top: 30px; font-size: 13px; font-weight: 300; line-height: 1.8; color: #5C5A55;">
+        <span style="max-width: 300px;">No gradient may exceed a single&#8209;value shade. No blue. No saturated hue anywhere.</span>
+        <span style="max-width: 300px;">Green on ivory 11.4:1. Charcoal on ivory 13.2:1. Gold is never used for body text.</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 260px 1fr; gap: 90px; padding: 150px 104px; border-bottom: 1px solid #E2DDD2;">
+    <div data-reveal style="display: flex; flex-direction: column; gap: 14px;">
+      <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">02 &mdash; Typography</span>
+      <p style="margin: 0; font-size: 15px; font-weight: 300; line-height: 1.8; color: #5C5A55;">Playfair Display for voice, Inter for information. Two families, five sizes, one tracking rule.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 0;">
+      <div data-reveal style="display: grid; grid-template-columns: 1fr 210px; gap: 60px; align-items: baseline; padding: 46px 0; border-top: 1px solid #E2DDD2;">
+        <span style="font-family: 'Playfair Display', serif; font-weight: 300; font-size: 96px; line-height: 0.98; letter-spacing: -0.02em;">Krishnadham</span>
+        <span style="font-size: 12px; line-height: 2; letter-spacing: 0.16em; text-transform: uppercase; color: #5C5A55;">Display XL<br>96&thinsp;/&thinsp;0.98&thinsp;/&thinsp;&minus;2%<br>Hero only</span>
+      </div>
+      <div data-reveal style="display: grid; grid-template-columns: 1fr 210px; gap: 60px; align-items: baseline; padding: 46px 0; border-top: 1px solid #E2DDD2;">
+        <span style="font-family: 'Playfair Display', serif; font-weight: 300; font-size: 64px; line-height: 1.04; letter-spacing: -0.015em;">A house of records</span>
+        <span style="font-size: 12px; line-height: 2; letter-spacing: 0.16em; text-transform: uppercase; color: #5C5A55;">Display L<br>64&thinsp;/&thinsp;1.04<br>Section openers</span>
+      </div>
+      <div data-reveal style="display: grid; grid-template-columns: 1fr 210px; gap: 60px; align-items: baseline; padding: 46px 0; border-top: 1px solid #E2DDD2;">
+        <span style="font-family: 'Playfair Display', serif; font-weight: 400; font-size: 38px; line-height: 1.2;">Registration &amp; address</span>
+        <span style="font-size: 12px; line-height: 2; letter-spacing: 0.16em; text-transform: uppercase; color: #5C5A55;">Display S<br>38&thinsp;/&thinsp;1.2<br>Card &amp; row titles</span>
+      </div>
+      <div data-reveal style="display: grid; grid-template-columns: 1fr 210px; gap: 60px; align-items: baseline; padding: 46px 0; border-top: 1px solid #E2DDD2;">
+        <p style="margin: 0; max-width: 620px; font-size: 19px; font-weight: 300; line-height: 1.8; color: #3A3833;">Body Large, set at nineteen over one&#8209;point&#8209;eight. Measure never exceeds sixty&#8209;eight characters, so a paragraph always reads as a column rather than a wall.</p>
+        <span style="font-size: 12px; line-height: 2; letter-spacing: 0.16em; text-transform: uppercase; color: #5C5A55;">Body L<br>19&thinsp;/&thinsp;1.8<br>Lead paragraphs</span>
+      </div>
+      <div data-reveal style="display: grid; grid-template-columns: 1fr 210px; gap: 60px; align-items: baseline; padding: 46px 0; border-top: 1px solid #E2DDD2;">
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+          <p style="margin: 0; max-width: 620px; font-size: 16.5px; font-weight: 300; line-height: 1.85; color: #3A3833;">Body Regular carries every descriptive line on the site &mdash; notices, minutes, quotation summaries.</p>
+          <span style="font-size: 11.5px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: #B08D57;">Label &mdash; 11.5&thinsp;/&thinsp;0.28em</span>
+        </div>
+        <span style="font-size: 12px; line-height: 2; letter-spacing: 0.16em; text-transform: uppercase; color: #5C5A55;">Body &amp; Label<br>16.5&thinsp;/&thinsp;1.85<br>All copy, all eyebrows</span>
+      </div>
+      <div data-reveal style="display: flex; gap: 40px; padding-top: 34px; border-top: 1px solid #E2DDD2; font-size: 13px; font-weight: 300; line-height: 1.8; color: #5C5A55;">
+        <span style="max-width: 280px;">Display type sits at 300 weight. Inter never exceeds 500.</span>
+        <span style="max-width: 280px;">Uppercase only for labels, and only with 0.22&ndash;0.34em tracking.</span>
+        <span style="max-width: 280px;">Numerals are lining, tabular in every table and document list.</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 260px 1fr; gap: 90px; padding: 150px 104px; border-bottom: 1px solid #E2DDD2;">
+    <div data-reveal style="display: flex; flex-direction: column; gap: 14px;">
+      <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">03 &mdash; Grid &amp; space</span>
+      <p style="margin: 0; font-size: 15px; font-weight: 300; line-height: 1.8; color: #5C5A55;">A twelve column field at 1440, 104px margins, 32px gutters. Whitespace is the primary material.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 56px;">
+      <div data-reveal style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 32px; height: 220px; padding: 0; border-top: 1px solid #E2DDD2; border-bottom: 1px solid #E2DDD2;">
+        <div style="background: rgba(23, 52, 44, 0.05);"></div><div style="background: rgba(23, 52, 44, 0.05);"></div><div style="background: rgba(23, 52, 44, 0.05);"></div><div style="background: rgba(23, 52, 44, 0.05);"></div><div style="background: rgba(23, 52, 44, 0.05);"></div><div style="background: rgba(23, 52, 44, 0.05);"></div><div style="background: rgba(23, 52, 44, 0.05);"></div><div style="background: rgba(23, 52, 44, 0.05);"></div><div style="background: rgba(23, 52, 44, 0.05);"></div><div style="background: rgba(23, 52, 44, 0.05);"></div><div style="background: rgba(23, 52, 44, 0.05);"></div><div style="background: rgba(23, 52, 44, 0.05);"></div>
+      </div>
+      <div data-reveal style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px;">
+        <div style="display: flex; flex-direction: column; gap: 12px;"><span style="font-family: 'Playfair Display', serif; font-size: 34px;">180</span><span style="font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: #5C5A55;">Section rhythm</span><span style="font-size: 13.5px; font-weight: 300; line-height: 1.75; color: #5C5A55;">Vertical air between two major sections.</span></div>
+        <div style="display: flex; flex-direction: column; gap: 12px;"><span style="font-family: 'Playfair Display', serif; font-size: 34px;">96</span><span style="font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: #5C5A55;">Block rhythm</span><span style="font-size: 13.5px; font-weight: 300; line-height: 1.75; color: #5C5A55;">Heading to content, row to row.</span></div>
+        <div style="display: flex; flex-direction: column; gap: 12px;"><span style="font-family: 'Playfair Display', serif; font-size: 34px;">32</span><span style="font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: #5C5A55;">Gutter</span><span style="font-size: 13.5px; font-weight: 300; line-height: 1.75; color: #5C5A55;">Column gap, card gap, form gap.</span></div>
+        <div style="display: flex; flex-direction: column; gap: 12px;"><span style="font-family: 'Playfair Display', serif; font-size: 34px;">8</span><span style="font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: #5C5A55;">Base unit</span><span style="font-size: 13.5px; font-weight: 300; line-height: 1.75; color: #5C5A55;">Every value is a multiple. No exceptions.</span></div>
+      </div>
+      <div data-reveal style="display: flex; flex-direction: column; gap: 22px; padding-top: 40px; border-top: 1px solid #E2DDD2;">
+        <span style="font-size: 11.5px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: #B08D57;">Composition rules</span>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 40px; font-size: 14.5px; font-weight: 300; line-height: 1.85; color: #3A3833;">
+          <span>Text columns occupy 5 or 6 of 12. Never the full width.</span>
+          <span>Images are full&#8209;bleed or exactly half the field &mdash; nothing in between.</span>
+          <span>One idea per screen. If two compete, they become two sections.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: 150px 104px; background: #17342C; color: #F8F6F1;">
+    <div style="display: grid; grid-template-columns: 260px 1fr; gap: 90px;">
+      <div data-reveal style="display: flex; flex-direction: column; gap: 14px;">
+        <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">04 &mdash; Motion</span>
+        <p style="margin: 0; font-size: 15px; font-weight: 300; line-height: 1.8; color: rgba(248, 246, 241, 0.62);">Six curves, used everywhere, and nothing else. Motion explains structure; it never decorates.</p>
+      </div>
+      <div style="display: flex; flex-direction: column;">
+        <div data-reveal style="display: grid; grid-template-columns: 260px 200px 150px 1fr; gap: 40px; align-items: baseline; padding: 28px 0; border-top: 1px solid rgba(248, 246, 241, 0.18);">
+          <span style="font-family: 'Playfair Display', serif; font-size: 28px;">Content reveal</span><span style="font-size: 13px; letter-spacing: 0.1em; color: #B08D57;">expo.out</span><span style="font-size: 13px; color: rgba(248, 246, 241, 0.6);">1250 ms</span><span style="font-size: 14px; font-weight: 300; line-height: 1.7; color: rgba(248, 246, 241, 0.6);">Masked rise, 70 ms per word, one block at a time.</span>
+        </div>
+        <div data-reveal style="display: grid; grid-template-columns: 260px 200px 150px 1fr; gap: 40px; align-items: baseline; padding: 28px 0; border-top: 1px solid rgba(248, 246, 241, 0.18);">
+          <span style="font-family: 'Playfair Display', serif; font-size: 28px;">Curtain &amp; page change</span><span style="font-size: 13px; letter-spacing: 0.1em; color: #B08D57;">expo.inOut</span><span style="font-size: 13px; color: rgba(248, 246, 241, 0.6);">1100 ms</span><span style="font-size: 14px; font-weight: 300; line-height: 1.7; color: rgba(248, 246, 241, 0.6);">Green panel wipes across, new page revealed beneath. No white flash.</span>
+        </div>
+        <div data-reveal style="display: grid; grid-template-columns: 260px 200px 150px 1fr; gap: 40px; align-items: baseline; padding: 28px 0; border-top: 1px solid rgba(248, 246, 241, 0.18);">
+          <span style="font-family: 'Playfair Display', serif; font-size: 28px;">Hover</span><span style="font-size: 13px; letter-spacing: 0.1em; color: #B08D57;">power3.out</span><span style="font-size: 13px; color: rgba(248, 246, 241, 0.6);">550 ms</span><span style="font-size: 14px; font-weight: 300; line-height: 1.7; color: rgba(248, 246, 241, 0.6);">Interruptible, always reversible mid&#8209;flight. Never a bounce.</span>
+        </div>
+        <div data-reveal style="display: grid; grid-template-columns: 260px 200px 150px 1fr; gap: 40px; align-items: baseline; padding: 28px 0; border-top: 1px solid rgba(248, 246, 241, 0.18);">
+          <span style="font-family: 'Playfair Display', serif; font-size: 28px;">Image scrub</span><span style="font-size: 13px; letter-spacing: 0.1em; color: #B08D57;">linear</span><span style="font-size: 13px; color: rgba(248, 246, 241, 0.6);">scroll&#8209;linked</span><span style="font-size: 14px; font-weight: 300; line-height: 1.7; color: rgba(248, 246, 241, 0.6);">1.14 over&#8209;scale settling to 1.02, counter&#8209;drift parallax.</span>
+        </div>
+        <div data-reveal style="display: grid; grid-template-columns: 260px 200px 150px 1fr; gap: 40px; align-items: baseline; padding: 28px 0; border-top: 1px solid rgba(248, 246, 241, 0.18);">
+          <span style="font-family: 'Playfair Display', serif; font-size: 28px;">Rule draw</span><span style="font-size: 13px; letter-spacing: 0.1em; color: #B08D57;">power2.inOut</span><span style="font-size: 13px; color: rgba(248, 246, 241, 0.6);">900 ms</span><span style="font-size: 14px; font-weight: 300; line-height: 1.7; color: rgba(248, 246, 241, 0.6);">Dividers grow from the left as their section arrives.</span>
+        </div>
+        <div data-reveal style="display: grid; grid-template-columns: 260px 200px 150px 1fr; gap: 40px; align-items: baseline; padding: 28px 0; border-top: 1px solid rgba(248, 246, 241, 0.18); border-bottom: 1px solid rgba(248, 246, 241, 0.18);">
+          <span style="font-family: 'Playfair Display', serif; font-size: 28px;">Cursor &amp; smooth scroll</span><span style="font-size: 13px; letter-spacing: 0.1em; color: #B08D57;">lerp 0.12</span><span style="font-size: 13px; color: rgba(248, 246, 241, 0.6);">continuous</span><span style="font-size: 14px; font-weight: 300; line-height: 1.7; color: rgba(248, 246, 241, 0.6);">Ring trails the dot; scroll eased to 1.05 s of inertia.</span>
+        </div>
+        <div data-reveal style="display: flex; gap: 60px; padding-top: 40px; font-size: 14px; font-weight: 300; line-height: 1.8; color: rgba(248, 246, 241, 0.62);">
+          <span style="max-width: 300px;">Only transform, clip&#8209;path and opacity animate. Everything is composited; 60 fps is a floor, not a target.</span>
+          <span style="max-width: 300px;">Nothing pops. Nothing overshoots. If an animation cannot be explained in one sentence, it is removed.</span>
+          <span style="max-width: 300px;">Reduced&#8209;motion preference disables every reveal and lands the page fully composed.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 260px 1fr; gap: 90px; padding: 150px 104px; border-bottom: 1px solid #E2DDD2;">
+    <div data-reveal style="display: flex; flex-direction: column; gap: 14px;">
+      <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">05 &mdash; Components</span>
+      <p style="margin: 0; font-size: 15px; font-weight: 300; line-height: 1.8; color: #5C5A55;">Hover each one. Every interaction on the site is built from these five pieces.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 90px;">
+
+      <div data-reveal style="display: flex; flex-direction: column; gap: 28px;">
+        <span style="font-size: 11.5px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: #B08D57;">Buttons</span>
+        <div style="display: flex; align-items: center; gap: 28px;">
+          <a href="#" data-btn="solid" style="position: relative; display: inline-flex; align-items: center; gap: 44px; padding: 21px 30px; background: #17342C; color: #F8F6F1; overflow: hidden;">
+            <span data-fill style="position: absolute; inset: 0; background: #B08D57;"></span>
+            <span style="position: relative; font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;">View notices</span>
+            <span style="position: relative; font-size: 14px;">&rarr;</span>
+          </a>
+          <a href="#" data-btn="ghost" style="position: relative; display: inline-flex; align-items: center; gap: 44px; padding: 20px 30px; border: 1px solid #C9C2B2; color: #17342C; overflow: hidden;">
+            <span data-fill style="position: absolute; inset: 0; background: #17342C;"></span>
+            <span data-swap style="position: relative; font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;">Download PDF</span>
+            <span data-swap style="position: relative; font-size: 14px;">&darr;</span>
+          </a>
+          <a href="#" data-btn="link" style="position: relative; display: inline-flex; flex-direction: column; gap: 8px; color: #17342C;">
+            <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;">Committee members</span>
+            <span data-rule style="height: 1px; background: #17342C; transform: scaleX(0); transform-origin: left center;"></span>
+          </a>
+        </div>
+      </div>
+
+      <div data-reveal style="display: flex; flex-direction: column; gap: 28px;">
+        <span style="font-size: 11.5px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: #B08D57;">Committee card</span>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;">
+          <div data-card style="display: flex; flex-direction: column; gap: 26px; padding: 38px 34px 34px; background: #FFFFFF; border: 1px solid #E9E4D9;">
+            <span style="font-size: 11.5px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: #B08D57;">Chairman</span>
+            <span style="font-family: 'Playfair Display', serif; font-size: 32px; line-height: 1.15;">Name Surname</span>
+            <span style="padding-top: 22px; border-top: 1px solid #EFEAE0; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: #5C5A55;">Flat A&#8209;1 / 704</span>
+          </div>
+          <div data-card style="display: flex; flex-direction: column; gap: 26px; padding: 38px 34px 34px; background: #FFFFFF; border: 1px solid #E9E4D9;">
+            <span style="font-size: 11.5px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: #B08D57;">Secretary</span>
+            <span style="font-family: 'Playfair Display', serif; font-size: 32px; line-height: 1.15;">Name Surname</span>
+            <span style="padding-top: 22px; border-top: 1px solid #EFEAE0; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: #5C5A55;">Flat A&#8209;1 / 502</span>
+          </div>
+          <div data-card style="display: flex; flex-direction: column; gap: 26px; padding: 38px 34px 34px; background: #FFFFFF; border: 1px solid #E9E4D9;">
+            <span style="font-size: 11.5px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: #B08D57;">Treasurer</span>
+            <span style="font-family: 'Playfair Display', serif; font-size: 32px; line-height: 1.15;">Name Surname</span>
+            <span style="padding-top: 22px; border-top: 1px solid #EFEAE0; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: #5C5A55;">Flat A&#8209;1 / 301</span>
+          </div>
+        </div>
+      </div>
+
+      <div data-reveal style="display: flex; flex-direction: column; gap: 28px;">
+        <span style="font-size: 11.5px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: #B08D57;">Document row &mdash; notices, minutes, quotations</span>
+        <div style="display: flex; flex-direction: column;">
+          <div data-row style="display: grid; grid-template-columns: 150px 1fr 300px 200px; gap: 40px; align-items: center; padding: 34px 0; border-top: 1px solid #E2DDD2;">
+            <span style="font-size: 12.5px; letter-spacing: 0.14em; color: #B08D57;">28.07.2026<br><span style="color: #5C5A55;">18:40</span></span>
+            <span style="font-family: 'Playfair Display', serif; font-size: 30px; line-height: 1.2;">Redevelopment quotation &mdash; Phase I</span>
+            <span style="font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C5A55;">Consolidated proposal received from the appointed developer, 42 pages.</span>
+            <div style="display: flex; justify-content: flex-end; gap: 26px; font-size: 11.5px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;"><a href="#" data-btn="link" style="display: flex; flex-direction: column; gap: 6px;">Preview<span data-rule style="height: 1px; background: #17342C; transform: scaleX(0); transform-origin: left center;"></span></a><a href="#" data-btn="link" style="display: flex; flex-direction: column; gap: 6px;">Download<span data-rule style="height: 1px; background: #17342C; transform: scaleX(0); transform-origin: left center;"></span></a></div>
+          </div>
+          <div data-row style="display: grid; grid-template-columns: 150px 1fr 300px 200px; gap: 40px; align-items: center; padding: 34px 0; border-top: 1px solid #E2DDD2; border-bottom: 1px solid #E2DDD2;">
+            <span style="font-size: 12.5px; letter-spacing: 0.14em; color: #B08D57;">14.07.2026<br><span style="color: #5C5A55;">11:05</span></span>
+            <span style="font-family: 'Playfair Display', serif; font-size: 30px; line-height: 1.2;">Minutes &mdash; Annual General Meeting</span>
+            <span style="font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C5A55;">Resolutions recorded and signed by the managing committee.</span>
+            <div style="display: flex; justify-content: flex-end; gap: 26px; font-size: 11.5px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;"><a href="#" data-btn="link" style="display: flex; flex-direction: column; gap: 6px;">Preview<span data-rule style="height: 1px; background: #17342C; transform: scaleX(0); transform-origin: left center;"></span></a><a href="#" data-btn="link" style="display: flex; flex-direction: column; gap: 6px;">Download<span data-rule style="height: 1px; background: #17342C; transform: scaleX(0); transform-origin: left center;"></span></a></div>
+          </div>
+        </div>
+      </div>
+
+      <div data-reveal style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px;">
+        <div style="display: flex; flex-direction: column; gap: 28px;">
+          <span style="font-size: 11.5px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: #B08D57;">Form field &mdash; secretary login</span>
+          <div style="display: flex; flex-direction: column; gap: 34px; padding: 44px 40px; background: #FFFFFF; border: 1px solid #E9E4D9;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: #5C5A55;">Registered email</span>
+              <div data-field style="height: 1px; background: #DDD7C9;"><div data-field-line style="height: 1px; background: #17342C; transform: scaleX(0); transform-origin: left center;"></div></div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: #5C5A55;">Password</span>
+              <div data-field style="height: 1px; background: #DDD7C9;"><div data-field-line style="height: 1px; background: #17342C; transform: scaleX(0); transform-origin: left center;"></div></div>
+            </div>
+            <span style="font-size: 12.5px; font-weight: 300; color: #5C5A55;">Three failed attempts lock the address for thirty minutes. Every attempt is logged.</span>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 28px;">
+          <span style="font-size: 11.5px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: #B08D57;">Image treatment</span>
+          <div style="position: relative; height: 268px; overflow: hidden; background: #EDE8DD;">
+            <div data-parallax="0.14" style="position: absolute; inset: -14% 0; background-image: repeating-linear-gradient(118deg, #E4DED0 0px, #E4DED0 13px, #EFEAE0 13px, #EFEAE0 28px);"></div>
+            <span style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 500; letter-spacing: 0.26em; text-transform: uppercase; color: rgba(36, 36, 36, 0.42);">Architectural photograph</span>
+          </div>
+          <span style="font-size: 13.5px; font-weight: 300; line-height: 1.8; color: #5C5A55;">Every photograph enters through a mask, holds a slow counter&#8209;drift, and never sits still on screen.</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 260px 1fr; gap: 90px; padding: 150px 104px 170px;">
+    <div data-reveal style="display: flex; flex-direction: column; gap: 14px;">
+      <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">06 &mdash; Structure</span>
+      <p style="margin: 0; font-size: 15px; font-weight: 300; line-height: 1.8; color: #5C5A55;">Seven public pages, one private area. Nothing else will be added.</p>
+    </div>
+    <div style="display: flex; flex-direction: column;">
+      <div data-reveal style="display: grid; grid-template-columns: 90px 1fr 1fr; gap: 40px; align-items: baseline; padding: 30px 0; border-top: 1px solid #E2DDD2;"><span style="font-size: 12px; letter-spacing: 0.16em; color: #B08D57;">01</span><span style="font-family: 'Playfair Display', serif; font-size: 34px;">Home</span><span style="font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C5A55;">Cinematic hero, then previews of about, committee, latest notice, latest quotation, latest minutes, contact.</span></div>
+      <div data-reveal style="display: grid; grid-template-columns: 90px 1fr 1fr; gap: 40px; align-items: baseline; padding: 30px 0; border-top: 1px solid #E2DDD2;"><span style="font-size: 12px; letter-spacing: 0.16em; color: #B08D57;">02</span><span style="font-family: 'Playfair Display', serif; font-size: 34px;">About us</span><span style="font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C5A55;">History, registration details, registered address, map. Nothing more.</span></div>
+      <div data-reveal style="display: grid; grid-template-columns: 90px 1fr 1fr; gap: 40px; align-items: baseline; padding: 30px 0; border-top: 1px solid #E2DDD2;"><span style="font-size: 12px; letter-spacing: 0.16em; color: #B08D57;">03</span><span style="font-family: 'Playfair Display', serif; font-size: 34px;">Committee members</span><span style="font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C5A55;">Name, designation, flat number.</span></div>
+      <div data-reveal style="display: grid; grid-template-columns: 90px 1fr 1fr; gap: 40px; align-items: baseline; padding: 30px 0; border-top: 1px solid #E2DDD2;"><span style="font-size: 12px; letter-spacing: 0.16em; color: #B08D57;">04</span><span style="font-family: 'Playfair Display', serif; font-size: 34px;">Redevelopment quotations</span><span style="font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C5A55;">Document rows with date, time, preview, download. Permanent.</span></div>
+      <div data-reveal style="display: grid; grid-template-columns: 90px 1fr 1fr; gap: 40px; align-items: baseline; padding: 30px 0; border-top: 1px solid #E2DDD2;"><span style="font-size: 12px; letter-spacing: 0.16em; color: #B08D57;">05</span><span style="font-family: 'Playfair Display', serif; font-size: 34px;">Notices</span><span style="font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C5A55;">Identical structure. No expiry, no archive.</span></div>
+      <div data-reveal style="display: grid; grid-template-columns: 90px 1fr 1fr; gap: 40px; align-items: baseline; padding: 30px 0; border-top: 1px solid #E2DDD2;"><span style="font-size: 12px; letter-spacing: 0.16em; color: #B08D57;">06</span><span style="font-family: 'Playfair Display', serif; font-size: 34px;">Meeting minutes</span><span style="font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C5A55;">Identical structure.</span></div>
+      <div data-reveal style="display: grid; grid-template-columns: 90px 1fr 1fr; gap: 40px; align-items: baseline; padding: 30px 0; border-top: 1px solid #E2DDD2;"><span style="font-size: 12px; letter-spacing: 0.16em; color: #B08D57;">07</span><span style="font-family: 'Playfair Display', serif; font-size: 34px;">Contact</span><span style="font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C5A55;">Secretary number, watchman number, society email, map.</span></div>
+      <div data-reveal style="display: grid; grid-template-columns: 90px 1fr 1fr; gap: 40px; align-items: baseline; padding: 30px 0; border-top: 1px solid #E2DDD2; border-bottom: 1px solid #E2DDD2;"><span style="font-size: 12px; letter-spacing: 0.16em; color: #B08D57;">&mdash;</span><span style="font-family: 'Playfair Display', serif; font-size: 34px;">Secretary login &amp; desk</span><span style="font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C5A55;">Single account. Upload, edit, delete across the three document types. No analytics, no widgets.</span></div>
+    </div>
+  </div>
+
+  <div style="display: flex; align-items: center; justify-content: space-between; padding: 40px 104px; background: #17342C; color: rgba(248, 246, 241, 0.55); font-size: 11px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase;">
+    <span>Tapovan A&#8209;1 Krishnadham Co&#8209;op. Housing Society Ltd.</span>
+    <span>Design system &mdash; revision 01</span>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1440}}">
+class Component extends DCLogic {
+  componentDidMount() { this.boot(); }
+  componentWillUnmount() {
+    if (this._raf) cancelAnimationFrame(this._raf);
+    (this._off || []).forEach(f => f());
+  }
+
+  async boot() {
+    if (this._booted) return;
+    this._booted = true;
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ok = await new Promise(res => {
+      const t0 = Date.now();
+      const p = () => window.gsap ? res(true) : (Date.now() - t0 > 6000 ? res(false) : requestAnimationFrame(p));
+      p();
+    });
+    if (!ok || reduced) { document.querySelectorAll('[data-reveal]').forEach(n => { n.style.opacity = '1'; }); return; }
+    this.g = window.gsap;
+    this.g.defaults({ ease: 'expo.out', duration: 1.25 });
+    if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) {} }
+    this._watch = [];
+    this._scrub = [];
+    this._off = [];
+    this.reveals();
+    this.components();
+    this.cursor();
+    this.loop();
+  }
+
+  words(el) {
+    const parts = Array.from(el.childNodes).reduce((a, n) => {
+      if (n.nodeName === 'BR') a.push('');
+      else a[a.length - 1] += (n.textContent || '');
+      return a;
+    }, ['']);
+    el.innerHTML = '';
+    parts.forEach(p => {
+      const holder = document.createElement('span');
+      holder.style.display = 'block';
+      p.trim().split(/\s+/).forEach((w, i, arr) => {
+        const s = document.createElement('span');
+        s.setAttribute('data-w', '');
+        s.style.display = 'inline-block';
+        s.textContent = w + (i < arr.length - 1 ? '\u00a0' : '');
+        holder.appendChild(s);
+      });
+      el.appendChild(holder);
+    });
+    const all = Array.from(el.querySelectorAll('[data-w]'));
+    const groups = [];
+    let cur = null;
+    all.forEach(w => {
+      const t = Math.round(w.offsetTop);
+      if (!cur || Math.abs(cur.t - t) > 3) { cur = { t: t, items: [] }; groups.push(cur); }
+      cur.items.push(w);
+    });
+    el.innerHTML = '';
+    const out = [];
+    groups.forEach(g => {
+      const mask = document.createElement('span');
+      mask.style.cssText = 'display:block;overflow:hidden;padding-bottom:0.08em;margin-bottom:-0.08em;';
+      g.items.forEach(i => { i.style.willChange = 'transform'; mask.appendChild(i); out.push(i); });
+      el.appendChild(mask);
+    });
+    return out;
+  }
+
+  reveals() {
+    const g = this.g;
+    document.querySelectorAll('[data-reveal]').forEach(block => {
+      const tl = g.timeline({ paused: true });
+      let at = 0;
+      Array.from(block.children).forEach((kid, i) => {
+        const head = kid.matches('h1, h2') ? kid : null;
+        if (head) {
+          const ws = this.words(head);
+          g.set(ws, { yPercent: 118 });
+          tl.to(ws, { yPercent: 0, duration: 1.3, stagger: 0.07 }, at);
+        } else {
+          g.set(kid, { clipPath: 'inset(0% 0% 100% 0%)', y: 20, willChange: 'transform, clip-path' });
+          tl.to(kid, { clipPath: 'inset(0% 0% -14% 0%)', y: 0, duration: 1.25 }, at);
+        }
+        at += 0.07;
+      });
+      if (!block.children.length) {
+        g.set(block, { clipPath: 'inset(0% 0% 100% 0%)', y: 20 });
+        tl.to(block, { clipPath: 'inset(0% 0% -14% 0%)', y: 0 }, 0);
+      }
+      block.style.opacity = '1';
+      this._watch.push({ el: block, tl: tl, played: false });
+    });
+
+    document.querySelectorAll('[data-parallax]').forEach(layer => {
+      const amp = (parseFloat(layer.getAttribute('data-parallax')) || 0.12) * 44;
+      g.set(layer, { willChange: 'transform' });
+      const tl = g.timeline({ paused: true })
+        .fromTo(layer, { yPercent: -amp, scale: 1.12 }, { yPercent: amp, scale: 1.02, ease: 'none', duration: 1 });
+      this._scrub.push({ el: layer.parentElement, tl: tl });
+    });
+  }
+
+  hover(el, enter, leave) {
+    el.addEventListener('mouseenter', enter);
+    el.addEventListener('mouseleave', leave);
+    this._off.push(() => { el.removeEventListener('mouseenter', enter); el.removeEventListener('mouseleave', leave); });
+  }
+
+  components() {
+    const g = this.g;
+    const E = 'power3.out';
+
+    document.querySelectorAll('[data-btn="solid"], [data-btn="ghost"]').forEach(btn => {
+      const fill = btn.querySelector('[data-fill]');
+      const arrow = btn.lastElementChild;
+      const swaps = Array.from(btn.querySelectorAll('[data-swap]'));
+      g.set(fill, { yPercent: 101 });
+      const fy = g.quickTo(fill, 'yPercent', { duration: 0.65, ease: E });
+      const ax = g.quickTo(arrow, 'x', { duration: 0.6, ease: E });
+      this.hover(btn,
+        () => { fy(0); ax(8); if (swaps.length) g.to(swaps, { color: '#F8F6F1', duration: 0.4, ease: 'none' }); },
+        () => { fy(101); ax(0); if (swaps.length) g.to(swaps, { color: '#17342C', duration: 0.4, ease: 'none' }); });
+    });
+
+    document.querySelectorAll('[data-btn="link"]').forEach(link => {
+      const rule = link.querySelector('[data-rule]');
+      if (!rule) return;
+      const sx = g.quickTo(rule, 'scaleX', { duration: 0.6, ease: E });
+      this.hover(link, () => sx(1), () => sx(0));
+    });
+
+    document.querySelectorAll('[data-card]').forEach(card => {
+      const y = g.quickTo(card, 'y', { duration: 0.7, ease: E });
+      this.hover(card,
+        () => { y(-6); g.to(card, { boxShadow: '0 26px 60px -34px rgba(23,52,44,0.34)', duration: 0.7, ease: E }); },
+        () => { y(0); g.to(card, { boxShadow: '0 0px 0px 0px rgba(23,52,44,0)', duration: 0.7, ease: E }); });
+    });
+
+    document.querySelectorAll('[data-row]').forEach(row => {
+      this.hover(row,
+        () => g.to(row, { backgroundColor: 'rgba(255,255,255,0.72)', paddingLeft: 20, duration: 0.6, ease: E }),
+        () => g.to(row, { backgroundColor: 'rgba(255,255,255,0)', paddingLeft: 0, duration: 0.6, ease: E }));
+    });
+
+    document.querySelectorAll('[data-field]').forEach(field => {
+      const line = field.querySelector('[data-field-line]');
+      const sx = g.quickTo(line, 'scaleX', { duration: 0.7, ease: E });
+      this.hover(field, () => sx(1), () => sx(0));
+    });
+  }
+
+  cursor() {
+    const g = this.g;
+    const ring = document.querySelector('[data-cursor-ring]');
+    const dot = document.querySelector('[data-cursor-dot]');
+    if (!ring || !dot) return;
+    const rx = g.quickTo(ring, 'x', { duration: 0.55, ease: 'power3.out' });
+    const ry = g.quickTo(ring, 'y', { duration: 0.55, ease: 'power3.out' });
+    const dx = g.quickTo(dot, 'x', { duration: 0.12, ease: 'power2.out' });
+    const dy = g.quickTo(dot, 'y', { duration: 0.12, ease: 'power2.out' });
+    const move = e => { rx(e.clientX); ry(e.clientY); dx(e.clientX); dy(e.clientY); };
+    window.addEventListener('mousemove', move);
+    this._off.push(() => window.removeEventListener('mousemove', move));
+    document.querySelectorAll('a, [data-card], [data-row], [data-field]').forEach(el => {
+      this.hover(el,
+        () => g.to(ring, { scale: 1.9, borderColor: 'rgba(176,141,87,0.85)', duration: 0.5, ease: 'power3.out' }),
+        () => g.to(ring, { scale: 1, borderColor: 'rgba(23,52,44,0.4)', duration: 0.5, ease: 'power3.out' }));
+    });
+  }
+
+  loop() {
+    const step = () => {
+      const vh = window.innerHeight || 900;
+      let q = 0;
+      this._watch.forEach(w => {
+        if (w.played) return;
+        const r = w.el.getBoundingClientRect();
+        if (r.top < vh * 0.9 && r.bottom > -60) { w.played = true; w.tl.delay(Math.min(q * 0.08, 0.4)).play(0); q++; }
+      });
+      this._scrub.forEach(s => {
+        const r = s.el.getBoundingClientRect();
+        s.tl.progress(Math.max(0, Math.min(1, (vh - r.top) / (vh + r.height))));
+      });
+      this._raf = requestAnimationFrame(step);
+    };
+    this._raf = requestAnimationFrame(step);
+  }
+
+  renderVals() { return {}; }
+}
+
+</script>
+</body>
+</html>

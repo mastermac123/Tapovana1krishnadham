@@ -1,0 +1,74 @@
+'use server';
+
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { AuthError } from 'next-auth';
+
+import { signIn } from '@/lib/auth';
+import { credentialsSchema } from '@/lib/auth';
+import {
+  clientIp,
+  lockState,
+  minutesRemaining,
+  overRateLimit,
+  recordAttempt,
+} from '@/lib/rate-limit';
+
+export type LoginState = { error?: string };
+
+/**
+ * Sign-in — HANDOFF.md section 6.
+ *
+ * The throttle checks live here rather than inside `authorize` so the reason
+ * for a refusal can be shown to the user. `authorize` still records every
+ * attempt, which is what the lock counts.
+ *
+ * The failure message is deliberately identical for an unknown address and a
+ * wrong password: telling them apart would confirm which addresses exist.
+ */
+export async function login(
+  _prev: LoginState,
+  formData: FormData
+): Promise<LoginState> {
+  const parsed = credentialsSchema.safeParse({
+    email: formData.get('email'),
+    password: formData.get('password'),
+  });
+
+  const ip = clientIp(await headers());
+
+  if (!parsed.success) {
+    return { error: 'Enter a registered email address and your password.' };
+  }
+
+  if (await overRateLimit(ip)) {
+    return { error: 'Too many attempts. Wait a minute and try again.' };
+  }
+
+  const lock = await lockState(ip);
+  if (lock.locked && lock.until) {
+    return {
+      error: `This address is locked for another ${minutesRemaining(lock.until)} minutes.`,
+    };
+  }
+
+  try {
+    await signIn('credentials', {
+      email: parsed.data.email,
+      password: parsed.data.password,
+      redirect: false,
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      // A refusal inside authorize has already been recorded; anything else
+      // failed before it ran, so record it here to keep the lock honest.
+      if (error.type !== 'CredentialsSignin') {
+        await recordAttempt(ip, parsed.data.email, false);
+      }
+      return { error: 'That email and password do not match.' };
+    }
+    throw error;
+  }
+
+  redirect('/desk/circular');
+}

@@ -1,0 +1,115 @@
+// Data model — HANDOFF.md section 5, adjusted for Cloudflare R2.
+//
+// The handoff stored a Cloudinary `fileUrl`. R2 buckets are private, so a
+// stored URL would be useless: what is kept is the object *key*, and every
+// download is a short-lived signed URL minted on demand. Nothing here is ever
+// publicly addressable.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+
+  // Node's ESM resolver requires explicit extensions. Without this the
+  // generated client's internal `./enums` imports resolve under a bundler but
+  // not under plain `node`, which is how prisma/seed.ts runs.
+  importFileExtension = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum DocType {
+  CIRCULAR
+  QUOTATION
+  MINUTES
+}
+
+/// A published paper. Documents are permanent: no expiry, no archive.
+/// Only the secretary deletes.
+model Document {
+  id          String  @id @default(cuid())
+  type        DocType
+  title       String
+  description String
+
+  /// R2 object key. Never a URL — see the note at the top of this file.
+  fileKey  String @unique
+  /// The name the secretary's file had, used for the download filename.
+  fileName String
+  fileSize Int
+  mimeType String
+
+  /// Stamped on publication; the notice board prints date and time.
+  uploadedAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  /// Set when the secretary deletes. The row is hidden everywhere public and
+  /// the R2 object is left in place, so a misclick on a signed set of minutes
+  /// is recoverable. Erasing for real is a separate, deliberate purge.
+  deletedAt DateTime?
+
+  @@index([type, uploadedAt])
+  @@index([deletedAt, uploadedAt])
+}
+
+/// The managing committee, maintained by the secretary at /desk/committee.
+model CommitteeMember {
+  id          String @id @default(cuid())
+  name        String
+  designation String
+  flatNumber  String
+  /// Display order on the public committee page.
+  order       Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([order])
+}
+
+/// A single account publishes everything. Residents read the public site.
+/// Kept deliberately narrow so adding roles later is additive, not a rewrite.
+model Secretary {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  /// argon2id.
+  passwordHash String
+  /// TOTP shared secret for the one-time password step.
+  otpSecret    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// A one-time code emailed to reset a forgotten password.
+///
+/// The code is stored **hashed**, never in plain text: a database leak must not
+/// hand anyone a working reset. Codes are single use, expire in fifteen
+/// minutes, and requesting a new one invalidates the previous.
+model PasswordReset {
+  id        String    @id @default(cuid())
+  email     String
+  codeHash  String
+  expiresAt DateTime
+  usedAt    DateTime?
+  /// Where the request came from, so abuse can be traced.
+  ip        String
+  /// Wrong guesses against this code. Five and it is dead.
+  attempts  Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  @@index([email, createdAt])
+}
+
+/// Every sign-in attempt, successful or not. Three consecutive failures from
+/// an address lock it for thirty minutes — HANDOFF.md section 6.
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  ip        String
+  email     String?
+  success   Boolean
+  createdAt DateTime @default(now())
+
+  @@index([ip, createdAt])
+}

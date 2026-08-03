@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+  html { scroll-behavior: auto; } * { box-sizing: border-box; } body { overflow-x: hidden; }
+  body { margin: 0; background: #F8F6F1; cursor: none; }
+  a { color: inherit; text-decoration: none; }
+  a:hover { color: #B08D57; }
+  ::selection { background: #E3D6BF; }
+  input, textarea { font: inherit; color: inherit; background: none; border: 0; outline: none; }
+  input::placeholder { color: rgba(36,36,36,0.3); }
+</style>
+</helmet>
+
+<div data-cursor-ring style="position: fixed; left: 0; top: 0; z-index: 9998; width: 38px; height: 38px; margin: -19px 0 0 -19px; border: 1px solid rgba(23, 52, 44, 0.38); border-radius: 50%; pointer-events: none; will-change: transform;"></div>
+<div data-cursor-dot style="position: fixed; left: 0; top: 0; z-index: 9999; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; background: #17342C; border-radius: 50%; pointer-events: none; will-change: transform;"></div>
+<div data-curtain style="position: fixed; inset: 0; z-index: 9000; background: #17342C; transform: scaleY(0); transform-origin: bottom center; pointer-events: none;"></div>
+
+<sc-if value="{{ loading }}" hint-placeholder-val="{{ true }}">
+  <div data-loader style="position: fixed; inset: 0; z-index: 9500; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px; background: #0C0F0E;">
+    <img data-loader-mark src="uploads/photos-1785513961192.jpg" alt="Krishnadham" style="width: 150px; filter: invert(1) brightness(1.15) contrast(1.7); mix-blend-mode: screen;">
+    <div data-loader-type style="display: flex; flex-direction: column; align-items: center; gap: 14px;">
+      <span style="font-family: 'Playfair Display', serif; font-weight: 300; font-size: 30px; letter-spacing: 0.36em; text-transform: uppercase; color: #F8F6F1;">Tapovan A&#8209;1</span>
+      <span style="font-size: 10px; font-weight: 500; letter-spacing: 0.46em; text-transform: uppercase; color: #B08D57;">Krishnadham</span>
+    </div>
+    <div data-loader-track style="width: 240px; height: 1px; margin-top: 10px; background: rgba(248, 246, 241, 0.14); overflow: hidden;">
+      <div data-loader-bar style="height: 100%; background: #B08D57; transform-origin: left center;"></div>
+    </div>
+  </div>
+</sc-if>
+
+<div data-nav style="position: fixed; left: 0; right: 0; top: 0; z-index: 200; display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr) auto; align-items: center; gap: clamp(16px, 2vw, 40px); padding: 26px clamp(20px, 4.4vw, 64px); color: #F8F6F1;">
+  <div data-nav-frost style="position: absolute; inset: 0; background: rgba(248, 246, 241, 0.82); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(36, 36, 36, 0.08); opacity: 0;"></div>
+  <a href="#" onClick="{{ goHome }}" style="position: relative; display: flex; flex-direction: column; gap: 5px;">
+    <span data-nav-ink style="font-family: 'Playfair Display', serif; font-weight: 400; font-size: clamp(15px, 1.32vw, 19px); letter-spacing: 0.22em; text-transform: uppercase; white-space: nowrap;">Tapovan A&#8209;1</span>
+    <span data-nav-sub style="font-size: clamp(7px, 0.6vw, 8.5px); font-weight: 500; letter-spacing: 0.26em; text-transform: uppercase; color: rgba(248, 246, 241, 0.62);">Krishnadham Co&#8209;op. Housing Society Ltd.</span>
+  </a>
+  <div style="position: relative; display: flex; flex-wrap: nowrap; justify-content: center; gap: clamp(9px, 1.7vw, 34px); min-width: 0; font-size: clamp(8px, 0.73vw, 10.5px); font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap;">
+    <sc-for list="{{ nav }}" as="item" hint-placeholder-count="6">
+      <a href="#" onClick="{{ item.go }}" data-navlink style="position: relative; display: flex; flex-direction: column; gap: 7px;">
+        <span data-nav-ink>{{ item.label }}</span>
+        <span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span>
+      </a>
+    </sc-for>
+  </div>
+  <div style="position: absolute; left: 0; right: 0; top: 100%; padding: 0 clamp(20px, 4.4vw, 64px); pointer-events: {{ menuEvents }}; opacity: {{ menuOpacity }}; transform: translateY({{ menuShift }}); transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: rgba(36, 36, 36, 0.1); background-color: rgba(248, 246, 241, 0.94); backdrop-filter: blur(18px); border: 1px solid rgba(36, 36, 36, 0.1); border-top: 0; box-shadow: 0 30px 70px -50px rgba(23, 52, 44, 0.55); overflow: hidden; clip-path: inset({{ menuClip }} 0 0 0); transition: clip-path 0.7s cubic-bezier(0.16, 1, 0.3, 1);">
+      <sc-for list="{{ menuItems }}" as="mi" hint-placeholder-count="4">
+        <a href="#" onClick="{{ mi.go }}" data-menuitem style="display: flex; flex-direction: column; justify-content: space-between; gap: 34px; min-height: 168px; padding: 26px 24px 24px; color: #17342C; text-transform: none;">
+          <span style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px;">
+            <span style="font-size: 10px; font-weight: 500; letter-spacing: 0.26em; text-transform: uppercase; color: #B08D57;">{{ mi.count }}</span>
+            <span data-menu-arrow style="font-size: 13px; color: #B08D57;">&rarr;</span>
+          </span>
+          <span style="display: flex; flex-direction: column; gap: 10px;">
+            <span style="font-family: 'Playfair Display', serif; font-weight: 400; font-size: 25px; line-height: 1.15; letter-spacing: 0;">{{ mi.label }}</span>
+            <span style="font-size: 12.5px; font-weight: 300; line-height: 1.65; letter-spacing: 0; text-transform: none; color: #5C5A55;">{{ mi.note }}</span>
+          </span>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+  <a href="#" onClick="{{ goLogin }}" data-btn="nav" style="position: relative; display: inline-flex; align-items: center; gap: 26px; padding: 13px clamp(14px, 1.5vw, 22px); border: 1px solid currentColor; white-space: nowrap; overflow: hidden;">
+    <span data-fill style="position: absolute; inset: 0; background: #B08D57;"></span>
+    <span data-nav-ink style="position: relative; font-size: clamp(9px, 0.73vw, 10.5px); font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap;">Secretary login</span>
+  </a>
+</div>
+
+<div data-page style="min-height: 100vh; background: #F8F6F1; color: #242424; font-family: Inter, sans-serif;">
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div>
+      <div style="position: relative; display: flex; flex-direction: column; justify-content: flex-end; min-height: 100vh; padding: 0 clamp(24px, 4.4vw, 64px) clamp(56px, 6vw, 88px); overflow: hidden;">
+        <div data-hero-img style="position: absolute; inset: 0; background-image: repeating-linear-gradient(112deg, #23342E 0px, #23342E 16px, #1B2926 16px, #1B2926 34px); will-change: transform;"></div>
+        <div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(12, 15, 14, 0.62) 0%, rgba(12, 15, 14, 0.24) 42%, rgba(12, 15, 14, 0.78) 100%);"></div>
+        <div style="position: relative; flex: 1 1 auto; display: flex; align-items: center; justify-content: center; min-height: 180px; padding-top: 120px;"><span style="font-size: 10.5px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(248, 246, 241, 0.34); text-align: center;">Architectural photograph of the building</span></div>
+        <div style="position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px); gap: clamp(32px, 5.5vw, 80px); align-items: end; color: #F8F6F1;">
+          <div data-hero-copy style="display: flex; flex-direction: column; gap: 34px;">
+            <span data-hero-el style="font-size: 11px; font-weight: 500; letter-spacing: 0.34em; text-transform: uppercase; color: #B08D57;">Established 1998 &middot; Registered co&#8209;operative housing society</span>
+            <h1 data-hero-head style="margin: 0; max-width: 860px; font-family: 'Playfair Display', serif; font-weight: 300; font-size: clamp(46px, 7.2vw, 104px); line-height: 0.96; letter-spacing: -0.02em;"><span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">A</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">house</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">that</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">keeps</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">its</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">own</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">records.</span></span></h1>
+          </div>
+          <div data-hero-el style="display: flex; flex-direction: column; gap: 30px; padding-bottom: 12px;">
+            <p style="margin: 0; font-size: 16px; font-weight: 300; line-height: 1.85; color: rgba(248, 246, 241, 0.72); text-wrap: pretty;">Notices, minutes and redevelopment papers, published by the committee and kept in the open.</p>
+            <a href="#" onClick="{{ goNotices }}" data-btn="solid" style="position: relative; display: inline-flex; align-items: center; justify-content: space-between; gap: 44px; padding: 21px 28px; background: #F8F6F1; color: #17342C; overflow: hidden;">
+              <span data-fill style="position: absolute; inset: 0; background: #B08D57;"></span>
+              <span data-btn-ink style="position: relative; font-size: 11.5px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;">Notice board</span>
+              <span data-arrow style="position: relative; font-size: 14px;">&rarr;</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: clamp(36px, 6.2vw, 90px); padding: clamp(96px, 12.5vw, 180px) clamp(24px, 7.2vw, 104px); border-bottom: 1px solid #E2DDD2;">
+        <div data-reveal style="display: flex; flex-direction: column; gap: 14px;">
+          <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">01 &mdash; The society</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 60px;">
+          <div data-reveal>
+            <h2 style="margin: 0; max-width: 900px; font-family: 'Playfair Display', serif; font-weight: 300; font-size: clamp(34px, 4.45vw, 64px); line-height: 1.06; letter-spacing: -0.015em;"><span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">One</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">wing</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">on</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">a</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">quiet</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">lane,</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">held</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">in</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">common</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">by</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">the</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">families</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">who</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">live</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">in</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">it.</span></span></h2>
+          </div>
+          <div data-reveal style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: clamp(40px, 6vw, 90px); padding-top: 44px; border-top: 1px solid #E2DDD2;">
+            <p style="margin: 0; font-size: 19px; font-weight: 300; line-height: 1.8; color: #3A3833; text-wrap: pretty;">Krishnadham was registered in 1998 and has been governed since by an elected managing committee. The society is now preparing for redevelopment, and every document in that process is published here.</p>
+            <div style="display: flex; flex-direction: column; gap: 30px;">
+              <a href="#" onClick="{{ goAbout }}" data-btn="link" style="display: inline-flex; flex-direction: column; gap: 8px; align-self: flex-start; font-size: 11.5px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;">About the society<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+              <a href="#" onClick="{{ goCommittee }}" data-btn="link" style="display: inline-flex; flex-direction: column; gap: 8px; align-self: flex-start; font-size: 11.5px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;">Committee members<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="position: relative; height: 720px; overflow: hidden; background: #EDE8DD;">
+        <div data-parallax="0.16" style="position: absolute; inset: -16% 0; background-image: repeating-linear-gradient(118deg, #E4DED0 0px, #E4DED0 15px, #EFEAE0 15px, #EFEAE0 32px);"></div>
+        <span style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(36, 36, 36, 0.4);">Full&#8209;bleed courtyard photograph</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: clamp(36px, 6.2vw, 90px); padding: clamp(96px, 12.5vw, 180px) clamp(24px, 7.2vw, 104px); border-bottom: 1px solid #E2DDD2;">
+        <div data-reveal style="display: flex; flex-direction: column; gap: 14px;">
+          <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">02 &mdash; Notice board</span>
+          <p style="margin: 0; font-size: 15px; font-weight: 300; line-height: 1.8; color: #5C5A55;">The three most recent papers &mdash; circulars, quotations and minutes, together.</p>
+        </div>
+        <div style="display: flex; flex-direction: column;">
+          <sc-for list="{{ latest }}" as="doc" hint-placeholder-count="3">
+            <div data-reveal>
+              <div data-row style="display: flex; flex-wrap: wrap; align-items: baseline; column-gap: clamp(20px, 2.8vw, 40px); row-gap: 18px; padding: 36px 0; border-top: 1px solid #E2DDD2;">
+                <span style="flex: 0 0 120px; font-size: 12.5px; letter-spacing: 0.14em; color: #B08D57;">{{ doc.date }}</span>
+                <span style="flex: 3 1 300px; min-width: 260px; font-family: 'Playfair Display', serif; font-size: 30px; line-height: 1.2;">{{ doc.title }}</span>
+                <span style="flex: 2 1 220px; min-width: 200px; font-size: 14px; font-weight: 300; line-height: 1.7; color: #5C5A55;">{{ doc.blurb }}</span>
+                <div style="flex: 0 0 auto; margin-left: auto; display: flex; justify-content: flex-end; gap: 26px; font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;">
+                  <a href="#" onClick="{{ doc.go }}" data-btn="link" style="display: flex; flex-direction: column; gap: 6px;">{{ doc.kind }} &rarr;<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); align-items: stretch; background: #17342C; color: #F8F6F1;">
+        <div style="display: flex; flex-direction: column; justify-content: center; gap: 40px; padding: clamp(96px, 12.5vw, 180px) clamp(28px, 6vw, 90px) clamp(96px, 12.5vw, 180px) clamp(24px, 7.2vw, 104px);">
+          <div data-reveal>
+            <h2 style="margin: 0; font-family: 'Playfair Display', serif; font-weight: 300; font-size: clamp(34px, 4.2vw, 60px); line-height: 1.04;"><span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">Speak</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">to</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">the</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">office.</span></span></h2>
+          </div>
+          <div data-reveal style="display: flex; flex-direction: column; gap: 26px;">
+            <p style="margin: 0; max-width: 420px; font-size: 17px; font-weight: 300; line-height: 1.8; color: rgba(248, 246, 241, 0.7);">The secretary and the watchman&rsquo;s cabin are reachable through the day; correspondence goes to the society address.</p>
+            <a href="#" onClick="{{ goContact }}" data-btn="ghost" style="position: relative; display: inline-flex; align-items: center; justify-content: space-between; gap: 44px; align-self: flex-start; padding: 20px 28px; border: 1px solid rgba(248, 246, 241, 0.4); overflow: hidden;">
+              <span data-fill style="position: absolute; inset: 0; background: #B08D57;"></span>
+              <span style="position: relative; font-size: 11.5px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;">Contact details</span>
+              <span data-arrow style="position: relative; font-size: 14px;">&rarr;</span>
+            </a>
+          </div>
+        </div>
+        <div style="position: relative; min-height: 620px; overflow: hidden; background: #14231F;">
+          <div data-parallax="0.12" style="position: absolute; inset: -14% 0; background-image: repeating-linear-gradient(98deg, rgba(248,246,241,0.06) 0px, rgba(248,246,241,0.06) 14px, transparent 14px, transparent 30px);"></div>
+          <span style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 10.5px; font-weight: 500; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(248, 246, 241, 0.36);">Entrance detail</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 60vh; padding: clamp(140px, 14vw, 200px) clamp(24px, 7.2vw, 104px) clamp(56px, 6vw, 90px); background: #17342C; color: #F8F6F1;">
+        <div data-reveal style="display: flex; flex-direction: column; gap: 26px;">
+          <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.32em; text-transform: uppercase; color: #B08D57;">About us</span>
+          <h1 style="margin: 0; max-width: 900px; font-family: 'Playfair Display', serif; font-weight: 300; font-size: clamp(42px, 6.4vw, 92px); line-height: 0.98; letter-spacing: -0.02em;"><span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">Twenty&#8209;eight</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">years</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">on</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">the</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">same</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">lane.</span></span></h1>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: clamp(36px, 6.2vw, 90px); padding: clamp(90px, 11vw, 160px) clamp(24px, 7.2vw, 104px); border-bottom: 1px solid #E2DDD2;">
+        <div data-reveal><span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">History</span></div>
+        <div data-reveal style="display: flex; flex-direction: column; gap: 34px; max-width: 720px;">
+          <p style="margin: 0; font-size: 19px; font-weight: 300; line-height: 1.8; color: #3A3833; text-wrap: pretty;">Tapovan A&#8209;1 was completed and occupied in 1998, and registered the same year as a co&#8209;operative housing society. The wing has stood since with its original fa&ccedil;ade, its courtyard and its single lift lobby.</p>
+          <p style="margin: 0; font-size: 16.5px; font-weight: 300; line-height: 1.85; color: #5C5A55; text-wrap: pretty;">The society is administered by an elected managing committee that meets through the year and reports to the general body. Its present work is the redevelopment of the wing, conducted through open tender, with every quotation and set of minutes published on this site.</p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: clamp(36px, 6.2vw, 90px); padding: clamp(90px, 11vw, 160px) clamp(24px, 7.2vw, 104px); border-bottom: 1px solid #E2DDD2;">
+        <div data-reveal><span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">Registration</span></div>
+        <div style="display: flex; flex-direction: column;">
+          <div data-reveal style="display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: clamp(20px, 2.8vw, 40px); align-items: baseline; padding: 30px 0; border-top: 1px solid #E2DDD2;"><span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #5C5A55;">Registered name</span><span style="font-family: 'Playfair Display', serif; font-size: 28px;">Tapovan A&#8209;1 Krishnadham Co&#8209;op. Housing Society Ltd.</span></div>
+          <div data-reveal style="display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: clamp(20px, 2.8vw, 40px); align-items: baseline; padding: 30px 0; border-top: 1px solid #E2DDD2;"><span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #5C5A55;">Registration number</span><span style="font-family: 'Playfair Display', serif; font-size: 28px;">To be confirmed</span></div>
+          <div data-reveal style="display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: clamp(20px, 2.8vw, 40px); align-items: baseline; padding: 30px 0; border-top: 1px solid #E2DDD2;"><span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #5C5A55;">Date of registration</span><span style="font-family: 'Playfair Display', serif; font-size: 28px;">1998</span></div>
+          <div data-reveal style="display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: clamp(20px, 2.8vw, 40px); align-items: baseline; padding: 30px 0; border-top: 1px solid #E2DDD2; border-bottom: 1px solid #E2DDD2;"><span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #5C5A55;">Registered address</span><span style="font-family: 'Playfair Display', serif; font-size: 28px; line-height: 1.35;">Tapovan A&#8209;1, Krishnadham,<br>&mdash; to be confirmed &mdash;</span></div>
+        </div>
+      </div>
+
+      <div data-reveal style="position: relative; height: 560px; overflow: hidden; background: #EDE8DD; border-bottom: 1px solid #E2DDD2;">
+        <div data-parallax="0.1" style="position: absolute; inset: -12% 0; background-image: repeating-linear-gradient(0deg, #E7E1D3 0px, #E7E1D3 1px, transparent 1px, transparent 46px), repeating-linear-gradient(90deg, #E7E1D3 0px, #E7E1D3 1px, transparent 1px, transparent 46px);"></div>
+        <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(36, 36, 36, 0.45);">Google map &mdash; registered address</span>
+          <span style="width: 1px; height: 40px; background: #B08D57;"></span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isCommittee }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 60vh; padding: clamp(140px, 14vw, 200px) clamp(24px, 7.2vw, 104px) clamp(56px, 6vw, 90px); background: #17342C; color: #F8F6F1;">
+        <div data-reveal style="display: flex; flex-direction: column; gap: 26px;">
+          <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.32em; text-transform: uppercase; color: #B08D57;">Managing committee</span>
+          <h1 style="margin: 0; font-family: 'Playfair Display', serif; font-weight: 300; font-size: clamp(42px, 6.4vw, 92px); line-height: 0.98; letter-spacing: -0.02em;"><span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">Elected</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">by</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">the</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">general</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">body.</span></span></h1>
+        </div>
+      </div>
+      <div style="padding: clamp(90px, 11vw, 160px) clamp(24px, 7.2vw, 104px);">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 32px;">
+          <sc-for list="{{ committee }}" as="m" hint-placeholder-count="6">
+            <div data-reveal>
+              <div data-card style="display: flex; flex-direction: column; gap: 26px; padding: 40px 34px 34px; background: #FFFFFF; border: 1px solid #E9E4D9;">
+                <span style="font-size: 11.5px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: #B08D57;">{{ m.role }}</span>
+                <span style="font-family: 'Playfair Display', serif; font-size: 32px; line-height: 1.15;">{{ m.name }}</span>
+                <span style="padding-top: 22px; border-top: 1px solid #EFEAE0; font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: #5C5A55;">{{ m.flat }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isDocs }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 60vh; padding: clamp(140px, 14vw, 200px) clamp(24px, 7.2vw, 104px) clamp(56px, 6vw, 90px); background: #17342C; color: #F8F6F1;">
+        <div data-reveal style="display: flex; flex-direction: column; gap: 26px;">
+          <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.32em; text-transform: uppercase; color: #B08D57;">{{ docEyebrow }}</span>
+          <h1 style="margin: 0; max-width: 940px; font-family: 'Playfair Display', serif; font-weight: 300; font-size: clamp(42px, 6.4vw, 92px); line-height: 0.98; letter-spacing: -0.02em;"><span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">{{ docTitle }}</span></span></h1>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: clamp(36px, 6.2vw, 90px); padding: clamp(90px, 11vw, 160px) clamp(24px, 7.2vw, 104px);">
+        <div data-reveal style="display: flex; flex-direction: column; gap: 34px;">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">{{ docCount }}</span>
+            <p style="margin: 0; font-size: 15px; font-weight: 300; line-height: 1.8; color: #5C5A55;">{{ docNote }}</p>
+          </div>
+          <div style="display: flex; flex-direction: column;">
+            <sc-for list="{{ filters }}" as="f" hint-placeholder-count="4">
+              <a href="#" onClick="{{ f.go }}" style="display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: baseline; padding: 16px 0; border-top: 1px solid #E2DDD2; font-size: 11.5px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: {{ f.color }};">
+                <span style="display: flex; flex-direction: column; gap: 8px;">
+                  <span>{{ f.label }}</span>
+                  <span style="height: 1px; background: {{ f.rule }};"></span>
+                </span>
+                <span style="font-size: 11px; color: #B08D57;">{{ f.count }}</span>
+              </a>
+            </sc-for>
+            <div style="height: 1px; background: #E2DDD2;"></div>
+          </div>
+        </div>
+        <div style="display: flex; flex-direction: column;">
+          <sc-for list="{{ docs }}" as="d" hint-placeholder-count="4">
+            <div data-reveal>
+              <div data-row style="display: flex; flex-wrap: wrap; align-items: baseline; column-gap: clamp(20px, 2.8vw, 40px); row-gap: 18px; padding: 38px 0; border-top: 1px solid #E2DDD2;">
+                <span style="flex: 0 0 120px; display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; letter-spacing: 0.14em;"><span style="color: #B08D57;">{{ d.date }}</span><span style="color: #5C5A55;">{{ d.time }}</span></span>
+                <span style="flex: 3 1 300px; min-width: 260px; display: flex; flex-direction: column; gap: 12px;">
+                  <span style="font-size: 10.5px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: #5C5A55;">{{ d.tag }}</span>
+                  <span style="font-family: 'Playfair Display', serif; font-size: 32px; line-height: 1.2;">{{ d.title }}</span>
+                </span>
+                <span style="flex: 2 1 240px; min-width: 220px; font-size: 14px; font-weight: 300; line-height: 1.75; color: #5C5A55;">{{ d.blurb }}</span>
+                <div style="flex: 0 0 auto; margin-left: auto; display: flex; justify-content: flex-end; gap: 28px; font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;">
+                  <a href="#" data-btn="link" style="display: flex; flex-direction: column; gap: 6px;">Preview<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+                  <a href="#" data-btn="link" style="display: flex; flex-direction: column; gap: 6px;">Download<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+          <div style="height: 1px; background: #E2DDD2;"></div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isContact }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="display: flex; flex-direction: column; justify-content: flex-end; min-height: 60vh; padding: clamp(140px, 14vw, 200px) clamp(24px, 7.2vw, 104px) clamp(56px, 6vw, 90px); background: #17342C; color: #F8F6F1;">
+        <div data-reveal style="display: flex; flex-direction: column; gap: 26px;">
+          <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.32em; text-transform: uppercase; color: #B08D57;">Contact</span>
+          <h1 style="margin: 0; font-family: 'Playfair Display', serif; font-weight: 300; font-size: clamp(42px, 6.4vw, 92px); line-height: 0.98; letter-spacing: -0.02em;"><span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">Three</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">ways</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">to</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">reach</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">us.</span></span></h1>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: clamp(36px, 6.2vw, 90px); padding: clamp(90px, 11vw, 160px) clamp(24px, 7.2vw, 104px); border-bottom: 1px solid #E2DDD2;">
+        <div data-reveal><span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">Details</span></div>
+        <div style="display: flex; flex-direction: column;">
+          <div data-reveal style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: clamp(20px, 2.8vw, 40px); align-items: baseline; padding: 34px 0; border-top: 1px solid #E2DDD2;"><span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #5C5A55;">Secretary</span><span style="font-family: 'Playfair Display', serif; font-size: clamp(26px, 2.8vw, 40px);">+91 &mdash; to be confirmed</span></div>
+          <div data-reveal style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: clamp(20px, 2.8vw, 40px); align-items: baseline; padding: 34px 0; border-top: 1px solid #E2DDD2;"><span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #5C5A55;">Watchman&rsquo;s cabin</span><span style="font-family: 'Playfair Display', serif; font-size: clamp(26px, 2.8vw, 40px);">+91 &mdash; to be confirmed</span></div>
+          <div data-reveal style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); gap: clamp(20px, 2.8vw, 40px); align-items: baseline; padding: 34px 0; border-top: 1px solid #E2DDD2; border-bottom: 1px solid #E2DDD2;"><span style="font-size: 12px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #5C5A55;">Society email</span><span style="font-family: 'Playfair Display', serif; font-size: clamp(24px, 2.8vw, 40px); word-break: break-word;">office@krishnadham.in</span></div>
+        </div>
+      </div>
+      <div data-reveal style="position: relative; height: 620px; overflow: hidden; background: #EDE8DD;">
+        <div data-parallax="0.1" style="position: absolute; inset: -12% 0; background-image: repeating-linear-gradient(0deg, #E7E1D3 0px, #E7E1D3 1px, transparent 1px, transparent 46px), repeating-linear-gradient(90deg, #E7E1D3 0px, #E7E1D3 1px, transparent 1px, transparent 46px);"></div>
+        <div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 12px;">
+          <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: rgba(36, 36, 36, 0.45);">Google map &mdash; society address</span>
+          <span style="width: 1px; height: 40px; background: #B08D57;"></span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 640px); min-height: 100vh; background: #17342C; color: #F8F6F1;">
+      <div style="position: relative; overflow: hidden;">
+        <div data-parallax="0.08" style="position: absolute; inset: -10% 0; background-image: repeating-linear-gradient(112deg, rgba(248,246,241,0.05) 0px, rgba(248,246,241,0.05) 15px, transparent 15px, transparent 32px);"></div>
+        <div style="position: absolute; left: clamp(24px, 7.2vw, 104px); bottom: 96px; display: flex; flex-direction: column; gap: 18px;">
+          <span style="font-family: 'Playfair Display', serif; font-weight: 300; font-size: clamp(32px, 3.6vw, 52px); line-height: 1.05;">Secretary&rsquo;s desk</span>
+          <span style="max-width: 340px; font-size: 15px; font-weight: 300; line-height: 1.8; color: rgba(248, 246, 241, 0.6);">A single account publishes every notice, quotation and set of minutes on this site.</span>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center; gap: 46px; padding: clamp(80px, 8vw, 120px) clamp(32px, 6.2vw, 90px); background: #F8F6F1; color: #242424;">
+        <div data-reveal style="display: flex; flex-direction: column; gap: 16px;">
+          <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">Authorised access</span>
+          <h1 style="margin: 0; font-family: 'Playfair Display', serif; font-weight: 300; font-size: clamp(34px, 3.75vw, 54px); line-height: 1.02;"><span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">Sign</span></span> <span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">in</span></span></h1>
+        </div>
+        <div data-reveal style="display: flex; flex-direction: column; gap: 38px;">
+          <label style="display: flex; flex-direction: column; gap: 14px;">
+            <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: #5C5A55;">Registered email</span>
+            <input type="email" placeholder="secretary@krishnadham.in" style="width: 100%; min-width: 0; padding-bottom: 12px; font-size: 17px; font-weight: 300;">
+            <div data-field style="height: 1px; background: #DDD7C9;"><div data-field-line style="height: 1px; background: #17342C; transform: scaleX(0); transform-origin: left center;"></div></div>
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 14px;">
+            <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: #5C5A55;">Password</span>
+            <input type="password" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" style="width: 100%; min-width: 0; padding-bottom: 12px; font-size: 17px; font-weight: 300; letter-spacing: 0.2em;">
+            <div data-field style="height: 1px; background: #DDD7C9;"><div data-field-line style="height: 1px; background: #17342C; transform: scaleX(0); transform-origin: left center;"></div></div>
+          </label>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 30px;">
+            <a href="#" onClick="{{ goDesk }}" data-btn="solid" style="position: relative; display: inline-flex; align-items: center; justify-content: space-between; gap: 44px; padding: 21px 30px; background: #17342C; color: #F8F6F1; overflow: hidden;">
+              <span data-fill style="position: absolute; inset: 0; background: #B08D57;"></span>
+              <span style="position: relative; font-size: 11.5px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;">Continue</span>
+              <span data-arrow style="position: relative; font-size: 14px;">&rarr;</span>
+            </a>
+            <a href="#" data-btn="link" style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #5C5A55;">Forgot password<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+          </div>
+          <p style="margin: 0; max-width: 420px; font-size: 12.5px; font-weight: 300; line-height: 1.85; color: #5C5A55;">One&#8209;time password verification follows. Three failed attempts from an address lock it for thirty minutes; every attempt is recorded.</p>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isDesk }}" hint-placeholder-val="{{ false }}">
+    <div style="display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr); min-height: 100vh;">
+      <div style="display: flex; flex-direction: column; gap: 60px; padding: 130px 40px 60px; background: #17342C; color: #F8F6F1;">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <span style="font-size: 10.5px; font-weight: 500; letter-spacing: 0.26em; text-transform: uppercase; color: #B08D57;">Signed in</span>
+          <span style="font-family: 'Playfair Display', serif; font-size: 26px;">Secretary</span>
+        </div>
+        <div style="display: flex; flex-direction: column;">
+          <sc-for list="{{ deskNav }}" as="s" hint-placeholder-count="3">
+            <a href="#" onClick="{{ s.go }}" data-desknav style="display: flex; align-items: center; justify-content: space-between; padding: 20px 0; border-top: 1px solid rgba(248, 246, 241, 0.16); font-size: 12px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: {{ s.color }};">
+              <span>{{ s.label }}</span>
+              <span style="font-size: 13px;">{{ s.marker }}</span>
+            </a>
+          </sc-for>
+        </div>
+        <a href="#" onClick="{{ goHome }}" data-btn="link" style="display: flex; flex-direction: column; gap: 6px; margin-top: auto; font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(248, 246, 241, 0.6);">Sign out<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 70px; padding: clamp(110px, 10vw, 140px) clamp(32px, 6.2vw, 90px) 100px;">
+        <div data-reveal style="display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; padding-bottom: 34px; border-bottom: 1px solid #E2DDD2;">
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.3em; text-transform: uppercase; color: #B08D57;">Publish</span>
+            <h1 style="margin: 0; font-family: 'Playfair Display', serif; font-weight: 300; font-size: clamp(32px, 3.6vw, 52px); line-height: 1.02;"><span style="display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.1em;margin-bottom:-0.1em;"><span data-w style="display:inline-block;will-change:transform;">{{ deskTitle }}</span></span></h1>
+          </div>
+          <span style="font-size: 13px; font-weight: 300; color: #5C5A55;">{{ deskCount }}</span>
+        </div>
+
+        <div data-reveal style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: clamp(30px, 4vw, 60px); align-items: start;">
+          <div style="display: flex; flex-direction: column; gap: 36px;">
+            <label style="display: flex; flex-direction: column; gap: 12px;">
+              <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: #5C5A55;">Title</span>
+              <input type="text" placeholder="Notice of the annual general meeting" style="width: 100%; min-width: 0; padding-bottom: 12px; font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 300;">
+              <div data-field style="height: 1px; background: #DDD7C9;"><div data-field-line style="height: 1px; background: #17342C; transform: scaleX(0); transform-origin: left center;"></div></div>
+            </label>
+            <label style="display: flex; flex-direction: column; gap: 12px;">
+              <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: #5C5A55;">Description</span>
+              <textarea rows="4" placeholder="One or two sentences, as it will appear beneath the title." style="width: 100%; min-width: 0; padding-bottom: 12px; font-size: 16px; font-weight: 300; line-height: 1.8; resize: none;"></textarea>
+              <div data-field style="height: 1px; background: #DDD7C9;"><div data-field-line style="height: 1px; background: #17342C; transform: scaleX(0); transform-origin: left center;"></div></div>
+            </label>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px 30px; padding-top: 8px;">
+              <a href="#" data-btn="ghost" style="position: relative; display: inline-flex; flex: 0 0 auto; align-items: center; gap: 40px; padding: 20px 28px; border: 1px solid #C9C2B2; color: #17342C; white-space: nowrap; overflow: hidden;">
+                <span data-fill style="position: absolute; inset: 0; background: #17342C;"></span>
+                <span data-swap style="position: relative; font-size: 11.5px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;">Choose PDF</span>
+              </a>
+              <a href="#" data-btn="solid" style="position: relative; display: inline-flex; flex: 0 0 auto; align-items: center; gap: 44px; padding: 21px 30px; background: #17342C; color: #F8F6F1; white-space: nowrap; overflow: hidden;">
+                <span data-fill style="position: absolute; inset: 0; background: #B08D57;"></span>
+                <span style="position: relative; font-size: 11.5px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;">Publish</span>
+                <span data-arrow style="position: relative; font-size: 14px;">&rarr;</span>
+              </a>
+            </div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 18px; padding: 34px 30px; background: #FFFFFF; border: 1px solid #E9E4D9;">
+            <span style="font-size: 11px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase; color: #B08D57;">Recorded automatically</span>
+            <span style="font-size: 14px; font-weight: 300; line-height: 1.85; color: #5C5A55;">Upload date and time are stamped on publication. Files remain on the site permanently and can be edited or deleted only from this desk.</span>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column;">
+          <sc-for list="{{ docs }}" as="d" hint-placeholder-count="3">
+            <div data-reveal>
+              <div data-row style="display: flex; flex-wrap: wrap; align-items: baseline; column-gap: clamp(20px, 2.8vw, 40px); row-gap: 16px; padding: 30px 0; border-top: 1px solid #E2DDD2;">
+                <span style="flex: 0 0 120px; display: flex; flex-direction: column; gap: 5px; font-size: 12px; letter-spacing: 0.14em;"><span style="color: #B08D57;">{{ d.date }}</span><span style="color: #5C5A55;">{{ d.time }}</span></span>
+                <span style="flex: 1 1 300px; min-width: 260px; font-family: 'Playfair Display', serif; font-size: 26px; line-height: 1.25;">{{ d.title }}</span>
+                <div style="flex: 0 0 auto; margin-left: auto; display: flex; justify-content: flex-end; gap: 26px; font-size: 11px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase;">
+                  <a href="#" data-btn="link" style="display: flex; flex-direction: column; gap: 6px;">Edit<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+                  <a href="#" data-btn="link" style="display: flex; flex-direction: column; gap: 6px; color: #8C4A3A;">Delete<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+          <div style="height: 1px; background: #E2DDD2;"></div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showFooter }}" hint-placeholder-val="{{ true }}">
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: clamp(30px, 4vw, 60px); flex-wrap: wrap; padding: clamp(56px, 6.2vw, 90px) clamp(24px, 7.2vw, 104px) 44px; background: #0F211C; color: rgba(248, 246, 241, 0.6);">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <span style="font-family: 'Playfair Display', serif; font-weight: 300; font-size: 34px; color: #F8F6F1;">Tapovan A&#8209;1 Krishnadham</span>
+        <span style="font-size: 12px; font-weight: 500; letter-spacing: 0.24em; text-transform: uppercase;">Co&#8209;operative Housing Society Ltd. &middot; Established 1998</span>
+      </div>
+      <div style="display: flex; gap: 60px; font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase;">
+        <a href="#" onClick="{{ goAbout }}" data-btn="link" style="display: flex; flex-direction: column; gap: 6px;">About<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+        <a href="#" onClick="{{ goNotices }}" data-btn="link" style="display: flex; flex-direction: column; gap: 6px;">Notice board<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+        <a href="#" onClick="{{ goContact }}" data-btn="link" style="display: flex; flex-direction: column; gap: 6px;">Contact<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+        <a href="#" onClick="{{ goLogin }}" data-btn="link" style="display: flex; flex-direction: column; gap: 6px;">Secretary<span data-rule style="height: 1px; background: currentColor; transform: scaleX(0); transform-origin: left center;"></span></a>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1440}}">
+const COMMITTEE = [
+  { role: 'Chairman', name: 'Name Surname', flat: 'Flat A-1 / 704' },
+  { role: 'Secretary', name: 'Name Surname', flat: 'Flat A-1 / 502' },
+  { role: 'Treasurer', name: 'Name Surname', flat: 'Flat A-1 / 301' },
+  { role: 'Member', name: 'Name Surname', flat: 'Flat A-1 / 205' },
+  { role: 'Member', name: 'Name Surname', flat: 'Flat A-1 / 903' },
+  { role: 'Member', name: 'Name Surname', flat: 'Flat A-1 / 1102' }
+];
+
+const DOCS = {
+  notices: {
+    eyebrow: 'Notices',
+    title: 'Everything the committee has put on record.',
+    note: 'Notices remain published permanently. Nothing is archived or withdrawn.',
+    items: [
+      { date: '28.07.2026', time: '18:40', title: 'Annual general meeting \u2014 notice and agenda', blurb: 'Convened for Sunday 16 August at 10:30 AM in the community hall.' },
+      { date: '19.07.2026', time: '09:15', title: 'Water tank cleaning \u2014 supply interruption', blurb: 'Supply to all floors suspended between 6 AM and 11 AM on Thursday.' },
+      { date: '04.07.2026', time: '20:02', title: 'Monsoon terrace inspection completed', blurb: 'Report of the appointed structural consultant, with recommendations.' },
+      { date: '21.06.2026', time: '17:48', title: 'Revised maintenance schedule for the quarter', blurb: 'Applicable from 1 July, as approved in the committee meeting of 14 June.' }
+    ]
+  },
+  quotations: {
+    eyebrow: 'Redevelopment quotations',
+    title: 'Every tender received, published in full.',
+    note: 'Quotations are published as received and are never removed.',
+    items: [
+      { date: '24.07.2026', time: '16:22', title: 'Redevelopment quotation \u2014 Tender III', blurb: 'Scope, phasing, corpus and rental terms as submitted to the committee.' },
+      { date: '12.06.2026', time: '11:37', title: 'Redevelopment quotation \u2014 Tender II', blurb: 'Revised submission following the queries raised at the general body.' },
+      { date: '02.05.2026', time: '15:10', title: 'Redevelopment quotation \u2014 Tender I', blurb: 'First proposal received under the open tender notice of April.' }
+    ]
+  },
+  minutes: {
+    eyebrow: 'Meeting minutes',
+    title: 'The record of every meeting held.',
+    note: 'Minutes are published once signed by the managing committee.',
+    items: [
+      { date: '14.07.2026', time: '21:05', title: 'Minutes \u2014 Special general body meeting', blurb: 'Resolutions on the appointment of the project management consultant.' },
+      { date: '14.06.2026', time: '20:30', title: 'Minutes \u2014 Managing committee, June', blurb: 'Maintenance revision, terrace inspection and tender process review.' },
+      { date: '10.05.2026', time: '20:12', title: 'Minutes \u2014 Managing committee, May', blurb: 'Opening of the first tender and appointment of the scrutiny sub-committee.' }
+    ]
+  }
+};
+
+class Component extends DCLogic {
+  state = { page: 'home', desk: 'notices', filter: 'all', menu: false, loading: true, ready: false };
+
+  componentDidMount() { this.boot(); }
+  componentDidUpdate() {
+    if (!this.state.ready) return;
+    const changed = this._lastPage !== this.state.page || this._lastDesk !== this.state.desk;
+    this._lastPage = this.state.page;
+    this._lastDesk = this.state.desk;
+    this.wire(changed);
+  }
+  componentWillUnmount() {
+    if (this._raf) cancelAnimationFrame(this._raf);
+    (this._off || []).forEach(f => f());
+  }
+
+  async boot() {
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const ok = await new Promise(res => {
+      const t0 = Date.now();
+      const p = () => window.gsap ? res(true) : (Date.now() - t0 > 6000 ? res(false) : requestAnimationFrame(p));
+      p();
+    });
+    this._off = [];
+    this._watch = [];
+    this._scrub = [];
+    if (!ok) { this.setState({ loading: false, ready: false }); return; }
+    this.g = window.gsap;
+    this.g.defaults({ ease: 'expo.out', duration: 1.2 });
+    if (document.fonts && document.fonts.ready) { try { await document.fonts.ready; } catch (e) {} }
+    this._reduced = reduced;
+    this._lastPage = this.state.page;
+    this._lastDesk = this.state.desk;
+    this.setState({ ready: true }, () => {
+      this.wire(true);
+      this.cursor();
+      this.navScroll();
+      this.loop();
+      if (reduced) { this.setState({ loading: false }); return; }
+      this.intro();
+    });
+  }
+
+  intro() {
+    const g = this.g;
+    const ov = document.querySelector('[data-loader]');
+    if (!ov) { this.setState({ loading: false }); return; }
+    const mark = ov.querySelector('[data-loader-mark]');
+    const type = Array.from(ov.querySelector('[data-loader-type]').children);
+    const track = ov.querySelector('[data-loader-track]');
+    const bar = ov.querySelector('[data-loader-bar]');
+    g.set(mark, { opacity: 0 });
+    g.set(bar, { scaleX: 0 });
+    g.set(type, { opacity: 0, y: 14 });
+    g.set(track, { opacity: 0 });
+    this._gate = performance.now() + 5200;
+    const done = () => {
+      if (this._introDone) return;
+      this._introDone = true;
+      clearTimeout(this._introTimer);
+      this._gate = 0;
+      this.setState({ loading: false }, () => {
+        requestAnimationFrame(() => requestAnimationFrame(() => this.hero()));
+      });
+    };
+    this._introTimer = setTimeout(done, 5300);
+    this._off.push(() => clearTimeout(this._introTimer));
+    g.timeline()
+      .fromTo(mark, { scale: 1.08 }, { scale: 1, duration: 3.4, ease: 'expo.out' }, 0)
+      .to(mark, { opacity: 0.95, duration: 2.0, ease: 'power2.inOut' }, 0)
+      .to(type, { opacity: 1, y: 0, duration: 1.5, stagger: 0.16, ease: 'power2.out' }, 0.85)
+      .to(track, { opacity: 1, duration: 0.7, ease: 'none' }, 1.4)
+      .to(bar, { scaleX: 1, duration: 2.3, ease: 'power1.inOut' }, 1.5)
+      .to([mark, ov.querySelector('[data-loader-type]'), track], { opacity: 0, duration: 0.9, ease: 'power2.inOut' }, 4.1)
+      .to(ov, { clipPath: 'inset(0% 0% 100% 0%)', duration: 1.3, ease: 'expo.inOut' }, 4.5)
+      .add(done, 5.0);
+  }
+
+  heroLand() {
+    const g = this.g;
+    const nav = document.querySelector('[data-nav]');
+    if (nav) g.set(nav, { y: 0, opacity: 1 });
+    const ws = document.querySelectorAll('[data-hero-head] [data-w]');
+    if (ws.length) g.set(ws, { yPercent: 0 });
+    const els = document.querySelectorAll('[data-hero-el]');
+    if (els.length) g.set(els, { y: 0, opacity: 1 });
+  }
+
+  hero() {
+    const g = this.g;
+    clearTimeout(this._heroFail);
+    this._heroFail = setTimeout(() => this.heroLand(), 3600);
+    this._off.push(() => clearTimeout(this._heroFail));
+    const head = document.querySelector('[data-hero-head]');
+    const els = Array.from(document.querySelectorAll('[data-hero-el]'));
+    const img = document.querySelector('[data-hero-img]');
+    const nav = document.querySelector('[data-nav]');
+    const tl = g.timeline();
+    if (img) tl.fromTo(img, { scale: 1.16 }, { scale: 1.04, duration: 3.2, ease: 'power2.out' }, 0);
+    if (head) {
+      const ws = head.querySelectorAll('[data-w]');
+      g.set(ws, { yPercent: 118 });
+      tl.to(ws, { yPercent: 0, duration: 1.4, stagger: 0.05 }, 0.1);
+    }
+    if (els.length) { g.set(els, { y: 26, opacity: 0 }); tl.to(els, { y: 0, opacity: 1, duration: 1.2, stagger: 0.12 }, 0.5); }
+    if (nav) { g.set(nav, { y: -20, opacity: 0 }); tl.to(nav, { y: 0, opacity: 1, duration: 1.1 }, 0.75); }
+    tl.eventCallback('onComplete', () => this.heroLand());
+  }
+
+  wire(fresh) {
+    if (fresh) { this._watch = []; this._scrub = []; }
+    const g = this.g;
+    document.querySelectorAll('[data-reveal]:not([data-mo])').forEach(block => {
+      block.setAttribute('data-mo', '1');
+      const tl = g.timeline({ paused: true });
+      let at = 0;
+      const kids = Array.from(block.children);
+      const targets = kids.length ? kids : [block];
+      targets.forEach(kid => {
+        const ws = kid.matches('h1, h2') ? kid.querySelectorAll('[data-w]') : null;
+        if (ws && ws.length) {
+          g.set(ws, { yPercent: 118 });
+          tl.to(ws, { yPercent: 0, duration: 1.3, stagger: 0.055 }, at);
+        } else {
+          g.set(kid, { clipPath: 'inset(0% 0% 100% 0%)', y: 20, willChange: 'transform, clip-path' });
+          tl.to(kid, { clipPath: 'inset(0% 0% -14% 0%)', y: 0, duration: 1.25 }, at);
+        }
+        at += 0.07;
+      });
+      this._watch.push({ el: block, tl: tl, played: false });
+    });
+
+    document.querySelectorAll('[data-parallax]:not([data-mo])').forEach(layer => {
+      layer.setAttribute('data-mo', '1');
+      const amp = (parseFloat(layer.getAttribute('data-parallax')) || 0.12) * 44;
+      g.set(layer, { willChange: 'transform' });
+      const tl = g.timeline({ paused: true })
+        .fromTo(layer, { yPercent: -amp, scale: 1.12 }, { yPercent: amp, scale: 1.02, ease: 'none', duration: 1 });
+      this._scrub.push({ el: layer.parentElement, tl: tl });
+    });
+
+    this.interactions();
+  }
+
+  hover(el, enter, leave) {
+    el.addEventListener('mouseenter', enter);
+    el.addEventListener('mouseleave', leave);
+    this._off.push(() => { el.removeEventListener('mouseenter', enter); el.removeEventListener('mouseleave', leave); });
+  }
+
+  interactions() {
+    const g = this.g;
+    const E = 'power3.out';
+
+    document.querySelectorAll('[data-btn="solid"]:not([data-mi]), [data-btn="ghost"]:not([data-mi]), [data-btn="nav"]:not([data-mi])').forEach(btn => {
+      btn.setAttribute('data-mi', '1');
+      const fill = btn.querySelector('[data-fill]');
+      const arrow = btn.querySelector('[data-arrow]');
+      const swaps = Array.from(btn.querySelectorAll('[data-swap]'));
+      if (fill) g.set(fill, { yPercent: 101 });
+      const fy = fill ? g.quickTo(fill, 'yPercent', { duration: 0.62, ease: E }) : null;
+      const ax = arrow ? g.quickTo(arrow, 'x', { duration: 0.6, ease: E }) : null;
+      this.hover(btn,
+        () => { if (fy) fy(0); if (ax) ax(8); if (swaps.length) g.to(swaps, { color: '#F8F6F1', duration: 0.35, ease: 'none' }); },
+        () => { if (fy) fy(101); if (ax) ax(0); if (swaps.length) g.to(swaps, { color: '#17342C', duration: 0.35, ease: 'none' }); });
+    });
+
+    document.querySelectorAll('[data-btn="link"]:not([data-mi]), [data-navlink]:not([data-mi])').forEach(link => {
+      link.setAttribute('data-mi', '1');
+      const rule = link.querySelector('[data-rule]');
+      if (!rule) return;
+      const sx = g.quickTo(rule, 'scaleX', { duration: 0.6, ease: E });
+      this.hover(link, () => sx(1), () => sx(0));
+    });
+
+    document.querySelectorAll('[data-card]:not([data-mi])').forEach(card => {
+      card.setAttribute('data-mi', '1');
+      const y = g.quickTo(card, 'y', { duration: 0.7, ease: E });
+      this.hover(card,
+        () => { y(-6); g.to(card, { boxShadow: '0 26px 60px -34px rgba(23,52,44,0.34)', duration: 0.7, ease: E }); },
+        () => { y(0); g.to(card, { boxShadow: '0 0px 0px 0px rgba(23,52,44,0)', duration: 0.7, ease: E }); });
+    });
+
+    document.querySelectorAll('[data-row]:not([data-mi])').forEach(row => {
+      row.setAttribute('data-mi', '1');
+      this.hover(row,
+        () => g.to(row, { backgroundColor: 'rgba(255,255,255,0.7)', paddingLeft: 20, duration: 0.6, ease: E }),
+        () => g.to(row, { backgroundColor: 'rgba(255,255,255,0)', paddingLeft: 0, duration: 0.6, ease: E }));
+    });
+
+    document.querySelectorAll('label:not([data-mi])').forEach(lab => {
+      lab.setAttribute('data-mi', '1');
+      const line = lab.querySelector('[data-field-line]');
+      if (!line) return;
+      const sx = g.quickTo(line, 'scaleX', { duration: 0.7, ease: E });
+      this.hover(lab, () => sx(1), () => sx(0));
+      const input = lab.querySelector('input, textarea');
+      if (input) {
+        input.addEventListener('focus', () => sx(1));
+        input.addEventListener('blur', () => sx(0));
+      }
+    });
+
+    document.querySelectorAll('[data-menuitem]:not([data-mi])').forEach(item => {
+      item.setAttribute('data-mi', '1');
+      const arrow = item.querySelector('[data-menu-arrow]');
+      const ax = arrow ? g.quickTo(arrow, 'x', { duration: 0.55, ease: E }) : null;
+      this.hover(item,
+        () => { if (ax) ax(7); g.to(item, { backgroundColor: 'rgba(255,255,255,0.9)', duration: 0.45, ease: E }); },
+        () => { if (ax) ax(0); g.to(item, { backgroundColor: 'rgba(255,255,255,0)', duration: 0.45, ease: E }); });
+    });
+
+    if (this._menuBound) return;
+    this._menuBound = true;
+    const away = e => {
+      if (!this.state.menu) return;
+      const nav = document.querySelector('[data-nav]');
+      if (nav && nav.contains(e.target)) return;
+      this.setState({ menu: false });
+    };
+    const esc = e => { if (e.key === 'Escape' && this.state.menu) this.setState({ menu: false }); };
+    document.addEventListener('pointerdown', away);
+    document.addEventListener('keydown', esc);
+    this._off.push(() => { document.removeEventListener('pointerdown', away); document.removeEventListener('keydown', esc); });
+  }
+
+  cursor() {
+    const g = this.g;
+    const ring = document.querySelector('[data-cursor-ring]');
+    const dot = document.querySelector('[data-cursor-dot]');
+    if (!ring || !dot) return;
+    const rx = g.quickTo(ring, 'x', { duration: 0.55, ease: 'power3.out' });
+    const ry = g.quickTo(ring, 'y', { duration: 0.55, ease: 'power3.out' });
+    const dx = g.quickTo(dot, 'x', { duration: 0.1, ease: 'power2.out' });
+    const dy = g.quickTo(dot, 'y', { duration: 0.1, ease: 'power2.out' });
+    const move = e => {
+      rx(e.clientX); ry(e.clientY); dx(e.clientX); dy(e.clientY);
+      const over = e.target && e.target.closest && e.target.closest('a, [data-card], [data-row], label, input, textarea');
+      if (!!over !== this._hot) {
+        this._hot = !!over;
+        g.to(ring, { scale: over ? 1.9 : 1, borderColor: over ? 'rgba(176,141,87,0.9)' : 'rgba(23,52,44,0.38)', duration: 0.5, ease: 'power3.out' });
+      }
+      const dark = e.target && e.target.closest && e.target.closest('[style*="17342C"], [style*="0F211C"], [style*="0C0F0E"], [style*="14231F"]');
+      const wantLight = !!dark;
+      if (wantLight !== this._light) {
+        this._light = wantLight;
+        g.to(dot, { backgroundColor: wantLight ? '#F8F6F1' : '#17342C', duration: 0.3, ease: 'none' });
+        if (!this._hot) g.to(ring, { borderColor: wantLight ? 'rgba(248,246,241,0.45)' : 'rgba(23,52,44,0.38)', duration: 0.3, ease: 'none' });
+      }
+    };
+    window.addEventListener('mousemove', move);
+    this._off.push(() => window.removeEventListener('mousemove', move));
+  }
+
+  navScroll() {
+    const nav = document.querySelector('[data-nav]');
+    if (!nav) return;
+    this._nav = nav;
+    this._navFrost = nav.querySelector('[data-nav-frost]');
+  }
+
+  applyNav() {
+    if (!this._nav) return;
+    const solid = this.state.page !== 'home' || this.state.menu || window.scrollY > 80;
+    if (solid === this._navSolid) return;
+    this._navSolid = solid;
+    const g = this.g;
+    g.to(this._navFrost, { opacity: solid ? 1 : 0, duration: 0.6, ease: 'power2.out' });
+    g.to(this._nav.querySelectorAll('[data-nav-ink]'), { color: solid ? '#17342C' : '#F8F6F1', duration: 0.5, ease: 'none' });
+    const sub = this._nav.querySelector('[data-nav-sub]');
+    if (sub) g.to(sub, { color: solid ? '#5C5A55' : 'rgba(248,246,241,0.62)', duration: 0.5, ease: 'none' });
+    const login = this._nav.querySelector('[data-btn="nav"]');
+    if (login) g.to(login, { borderColor: solid ? '#C9C2B2' : 'rgba(248,246,241,0.5)', duration: 0.5, ease: 'none' });
+  }
+
+  loop() {
+    const step = () => {
+      try { this.tick(); } catch (e) { console.warn('motion tick', e && e.message); }
+      this._raf = requestAnimationFrame(step);
+    };
+    this._raf = requestAnimationFrame(step);
+  }
+
+  tick() {
+    {
+      const vh = window.innerHeight || 900;
+      const gated = this._gate && performance.now() < this._gate;
+      let q = 0;
+      this._watch.forEach(w => {
+        if (w.played || gated) return;
+        const r = w.el.getBoundingClientRect();
+        if (r.top < vh * 0.9 && r.bottom > -60) { w.played = true; w.tl.delay(Math.min(q * 0.08, 0.4)).play(0); q++; }
+      });
+      this._scrub.forEach(s => {
+        const r = s.el.getBoundingClientRect();
+        s.tl.progress(Math.max(0, Math.min(1, (vh - r.top) / (vh + r.height))));
+      });
+      this.applyNav();
+    }
+  }
+
+  go(page, desk) {
+    return e => {
+      if (e && e.preventDefault) e.preventDefault();
+      if (page === this.state.page && (!desk || desk === this.state.desk)) return;
+      const commit = () => {
+        this.setState({ page: page, desk: desk || this.state.desk, menu: false }, () => {
+          window.scrollTo(0, 0);
+          this._navSolid = null;
+          if (page === 'home' && this.g && !this._reduced) requestAnimationFrame(() => this.hero());
+        });
+      };
+      if (!this.g || this._reduced) { commit(); return; }
+      const c = document.querySelector('[data-curtain]');
+      this.g.timeline()
+        .set(c, { transformOrigin: 'bottom center' })
+        .to(c, { scaleY: 1, duration: 0.62, ease: 'expo.inOut' })
+        .add(commit)
+        .set(c, { transformOrigin: 'top center' })
+        .to(c, { scaleY: 0, duration: 0.72, ease: 'expo.inOut' }, '+=0.08');
+    };
+  }
+
+  toggleMenu(force) {
+    return e => {
+      if (e && e.preventDefault) e.preventDefault();
+      const open = typeof force === 'boolean' ? force : !this.state.menu;
+      if (open === this.state.menu) return;
+      this.setState({ menu: open });
+    };
+  }
+
+  goFiltered(key) {
+    const nav = this.go('notices');
+    return e => {
+      if (e && e.preventDefault) e.preventDefault();
+      this.setState({ menu: false, filter: key });
+      nav(e);
+    };
+  }
+
+  setFilter(key) {
+    return e => {
+      if (e && e.preventDefault) e.preventDefault();
+      if (key === this.state.filter) return;
+      this.setState({ filter: key });
+    };
+  }
+
+  allDocs() {
+    const tag = { notices: 'Circular', quotations: 'Quotation', minutes: 'Minutes' };
+    const out = [];
+    Object.keys(DOCS).forEach(k => DOCS[k].items.forEach(i => out.push(Object.assign({ cat: k, tag: tag[k] }, i))));
+    const key = d => d.date.split('.').reverse().join('');
+    return out.sort((a, b) => key(b).localeCompare(key(a)));
+  }
+
+  renderVals() {
+    const p = this.state.page;
+    const isDocs = p === 'notices';
+    const filter = this.state.filter;
+    const all = this.allDocs();
+    const shown = filter === 'all' ? all : all.filter(d => d.cat === filter);
+    const deskSet = DOCS[this.state.desk];
+    const deskLabels = { notices: 'Circulars', quotations: 'Redevelopment quotations', minutes: 'Meeting minutes' };
+
+    return {
+      loading: this.state.loading,
+      isHome: p === 'home',
+      isAbout: p === 'about',
+      isCommittee: p === 'committee',
+      isDocs: isDocs,
+      isContact: p === 'contact',
+      isLogin: p === 'login',
+      isDesk: p === 'desk',
+      showFooter: p !== 'login' && p !== 'desk',
+
+      nav: [
+        { label: 'Home', go: this.go('home') },
+        { label: 'About', go: this.go('about') },
+        { label: 'Committee', go: this.go('committee') },
+        { label: 'Notice board', go: this.toggleMenu() },
+        { label: 'Contact', go: this.go('contact') }
+      ],
+      menuOpen: this.state.menu,
+      menuOpacity: this.state.menu ? 1 : 0,
+      menuShift: this.state.menu ? '0px' : '-14px',
+      menuClip: this.state.menu ? '0%' : '100%',
+      menuEvents: this.state.menu ? 'auto' : 'none',
+      menuItems: [
+        { label: 'All papers', count: all.length, note: 'Everything on record, newest first.', go: this.goFiltered('all') },
+        { label: 'Circulars', count: DOCS.notices.items.length, note: 'Day-to-day notices from the committee.', go: this.goFiltered('notices') },
+        { label: 'Redevelopment quotations', count: DOCS.quotations.items.length, note: 'Every tender received, published in full.', go: this.goFiltered('quotations') },
+        { label: 'Meeting minutes', count: DOCS.minutes.items.length, note: 'Signed records of every meeting held.', go: this.goFiltered('minutes') }
+      ],
+      filters: [
+        { label: 'All papers', count: all.length, go: this.setFilter('all'), color: filter === 'all' ? '#17342C' : '#5C5A55', rule: filter === 'all' ? '#B08D57' : 'transparent' },
+        { label: 'Circulars', count: DOCS.notices.items.length, go: this.setFilter('notices'), color: filter === 'notices' ? '#17342C' : '#5C5A55', rule: filter === 'notices' ? '#B08D57' : 'transparent' },
+        { label: 'Redevelopment quotations', count: DOCS.quotations.items.length, go: this.setFilter('quotations'), color: filter === 'quotations' ? '#17342C' : '#5C5A55', rule: filter === 'quotations' ? '#B08D57' : 'transparent' },
+        { label: 'Meeting minutes', count: DOCS.minutes.items.length, go: this.setFilter('minutes'), color: filter === 'minutes' ? '#17342C' : '#5C5A55', rule: filter === 'minutes' ? '#B08D57' : 'transparent' }
+      ],
+      goHome: this.go('home'),
+      goAbout: this.go('about'),
+      goCommittee: this.go('committee'),
+      goNotices: this.go('notices'),
+      goContact: this.go('contact'),
+      goLogin: this.go('login'),
+      goDesk: this.go('desk'),
+
+      committee: COMMITTEE,
+      docs: p === 'desk' ? deskSet.items : shown,
+      docEyebrow: 'Notice board',
+      docTitle: 'Every paper the committee has put on record.',
+      docNote: 'Circulars, redevelopment quotations and meeting minutes are published here together and are never withdrawn.',
+      docCount: shown.length + ' of ' + all.length + ' published',
+
+      latest: all.slice(0, 3).map(d => ({ date: d.date, title: d.title, blurb: d.blurb, kind: d.tag, go: this.go('notices') })),
+
+      deskNav: ['notices', 'quotations', 'minutes'].map(k => ({
+        label: deskLabels[k],
+        marker: this.state.desk === k ? '\u2014' : '',
+        color: this.state.desk === k ? '#F8F6F1' : 'rgba(248,246,241,0.55)',
+        go: this.go('desk', k)
+      })),
+      deskTitle: deskLabels[this.state.desk],
+      deskCount: deskSet.items.length + ' published \u00b7 stored permanently'
+    };
+  }
+}
+
+</script>
+</body>
+</html>

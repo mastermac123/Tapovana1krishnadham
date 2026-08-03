@@ -1,0 +1,18 @@
+node_modules
+.next
+out
+build
+.env
+.env.local
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+
+/lib/generated/prisma
+
+# Editor agent skills, installed by `prisma init`. Regenerated on demand and
+# specific to whichever editor you use — not part of the project.
+.windsurf/
+.agents/
+.claude/skills/
+skills-lock.json
