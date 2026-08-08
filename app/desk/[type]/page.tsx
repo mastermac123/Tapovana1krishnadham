@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Reveal from '@/components/motion/Reveal';
 import WordRise from '@/components/motion/WordRise';
 import PublishForm from '@/components/desk/PublishForm';
-import LinkRule from '@/components/ui/LinkRule';
+import DeskDocumentRow from '@/components/desk/DeskDocumentRow';
 import Row from '@/components/ui/Row';
 import { TYPE_LABEL, documentsOfType, toDbType } from '@/lib/documents';
 import type { NoticeType } from '@/lib/site';
@@ -110,39 +110,13 @@ export default async function DeskTypePage({
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {docs.map((doc) => (
           <Reveal key={doc.id}>
-            <Row style={{ padding: '30px 0', rowGap: 16 }}>
-              <span
-                style={{
-                  flex: '0 0 120px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 5,
-                  fontSize: 12,
-                  letterSpacing: '0.14em',
-                }}
-              >
-                <span style={{ color: '#B08D57' }}>{doc.date}</span>
-                <span style={{ color: '#5C5A55' }}>{doc.time}</span>
-              </span>
-
-              <span
-                style={{
-                  flex: '1 1 300px',
-                  minWidth: 260,
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 26,
-                  lineHeight: 1.25,
-                }}
-              >
-                {doc.title}
-              </span>
-
-              {/* TODO(phase 2): PATCH and DELETE /api/documents/[id]. */}
-              <div className="row__actions">
-                <LinkRule>Edit</LinkRule>
-                <LinkRule style={{ color: '#8C4A3A' }}>Delete</LinkRule>
-              </div>
-            </Row>
+            <DeskDocumentRow
+              id={doc.id}
+              date={doc.date}
+              time={doc.time}
+              title={doc.title}
+              description={doc.description}
+            />
           </Reveal>
         ))}
         <div style={{ height: 1, background: '#E2DDD2' }} />

@@ -49,6 +49,15 @@ function r2(): S3Client {
       accessKeyId: required('R2_ACCESS_KEY_ID'),
       secretAccessKey: required('R2_SECRET_ACCESS_KEY'),
     },
+    /**
+     * Recent SDK versions add a CRC32 checksum to every PutObject by default.
+     * On a *presigned* URL that checksum is computed at signing time — when
+     * there is no payload — so it signs the checksum of nothing, and R2 then
+     * rejects the browser's real upload for not matching. WHEN_REQUIRED keeps
+     * checksums for calls that genuinely need them and leaves presigned PUTs
+     * alone.
+     */
+    requestChecksumCalculation: 'WHEN_REQUIRED',
   });
   return client;
 }

@@ -41,6 +41,8 @@ const client = new S3Client({
     accessKeyId: need('R2_ACCESS_KEY_ID'),
     secretAccessKey: need('R2_SECRET_ACCESS_KEY'),
   },
+  // Must match lib/r2.ts, or this diagnostic tests something the app does not do.
+  requestChecksumCalculation: 'WHEN_REQUIRED',
 });
 
 /** Smallest thing that is genuinely a PDF by magic bytes. */
@@ -72,6 +74,13 @@ try {
     { expiresIn: 300 }
   );
   check('signed an upload URL', Boolean(putUrl));
+  // A checksum baked in at signing time is computed over an empty payload, so
+  // R2 would reject the browser's real upload for not matching it.
+  check(
+    'upload URL carries no premature checksum',
+    !putUrl.includes('x-amz-checksum'),
+    putUrl.includes('x-amz-checksum') ? 'checksum present — uploads will fail' : ''
+  );
 
   const put = await fetch(putUrl, {
     method: 'PUT',

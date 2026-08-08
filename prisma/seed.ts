@@ -85,9 +85,21 @@ async function seedSecretary() {
     );
   }
 
-  const existing = await db.secretary.findUnique({ where: { email } });
-  if (existing) {
-    console.log(`secretary: ${email} already exists, password left untouched`);
+  /**
+   * There is one secretary, and this seeds it only when none exists.
+   *
+   * Matching on the seeded email is not enough: the secretary can change their
+   * own address at /desk/account, which leaves SEED_SECRETARY_EMAIL stale — and
+   * a re-seed would then quietly create a *second* account able to publish and
+   * delete everything. Counting is the check that cannot go wrong.
+   */
+  const count = await db.secretary.count();
+  if (count > 0) {
+    const existing = await db.secretary.findFirst({ select: { email: true } });
+    console.log(
+      `secretary: ${existing?.email} already exists — leaving it alone.\n` +
+        '           To change it: node scripts/set-secretary-email.mjs <address>'
+    );
     return;
   }
 

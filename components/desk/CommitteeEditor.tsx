@@ -1,12 +1,16 @@
 'use client';
 
-import { useId, useState } from 'react';
+import { useActionState, useEffect, useId, useRef, useState } from 'react';
 import Reveal from '@/components/motion/Reveal';
 import ButtonGhost from '@/components/ui/ButtonGhost';
 import ButtonSolid from '@/components/ui/ButtonSolid';
 import Field from '@/components/ui/Field';
 import LinkRule from '@/components/ui/LinkRule';
 import type { CommitteeMember } from '@/lib/committee';
+import {
+  saveCommittee,
+  type CommitteeState,
+} from '@/app/desk/committee/actions';
 
 /**
  * The secretary edits the managing committee here; whatever is saved is what
@@ -16,8 +20,8 @@ import type { CommitteeMember } from '@/lib/committee';
  * two buttons, its danger-coloured Delete link and its hairline rows. No new
  * colour, size or spacing is introduced.
  *
- * TODO(phase 2): PUT /api/committee, revalidate /committee. Nothing is
- * persisted yet — edits live in component state for the duration of the page.
+ * Rows carry a stable `key` rather than an array index, so removing one row
+ * cannot drag another row's typed text up into its place.
  */
 
 type Draft = {
@@ -39,6 +43,29 @@ export default function CommitteeEditor({
     initial.map((m, i) => ({ ...m, key: `${idBase}-${i}` }))
   );
   const [seq, setSeq] = useState(initial.length);
+  const [state, action, pending] = useActionState<CommitteeState, FormData>(
+    saveCommittee,
+    {}
+  );
+
+  /**
+   * Re-key the rows from what was actually stored.
+   *
+   * The inputs are uncontrolled, so a new `defaultValue` alone will not reach
+   * them — only a remount will, and changing the key is what forces that.
+   * Without this the boxes keep showing pre-save text and a successful save
+   * reads as a failed one.
+   */
+  const synced = useRef<CommitteeState['members']>(undefined);
+  useEffect(() => {
+    if (!state.members || state.members === synced.current) return;
+    synced.current = state.members;
+    const stamp = Date.now();
+    setMembers(
+      state.members.map((m, i) => ({ ...m, key: `${idBase}-saved-${stamp}-${i}` }))
+    );
+    setSeq(state.members.length);
+  }, [state.members, idBase]);
 
   function addMember() {
     setMembers((prev) => [...prev, { ...BLANK, key: `${idBase}-${seq}` }]);
@@ -50,7 +77,7 @@ export default function CommitteeEditor({
   }
 
   return (
-    <>
+    <form action={action} style={{ display: 'contents' }}>
       <Reveal className="desk__form">
         <aside
           style={{
@@ -100,7 +127,7 @@ export default function CommitteeEditor({
               <div className="committee-editor__row">
                 <Field
                   label="Designation"
-                  name={`role-${i}`}
+                  name={`designation-${i}`}
                   gap={12}
                   placeholder="Chairman"
                   defaultValue={member.designation}
@@ -162,13 +189,30 @@ export default function CommitteeEditor({
           style={{ flex: '0 0 auto', whiteSpace: 'nowrap' }}
         />
         <ButtonSolid
-          label="Save changes"
+          type="submit"
+          disabled={pending}
+          label={pending ? 'Saving' : 'Save changes'}
           background="#17342C"
           color="#F8F6F1"
           padding="21px 30px"
           style={{ flex: '0 0 auto', whiteSpace: 'nowrap' }}
         />
+
+        {state.error || state.ok ? (
+          <p
+            role="alert"
+            style={{
+              margin: 0,
+              flex: '1 1 240px',
+              fontSize: 13,
+              lineHeight: 1.7,
+              color: state.error ? '#8C4A3A' : '#17342C',
+            }}
+          >
+            {state.error ?? state.ok}
+          </p>
+        ) : null}
       </div>
-    </>
+    </form>
   );
 }
