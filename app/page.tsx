@@ -86,9 +86,10 @@ export default async function HomePage() {
                 textWrap: 'pretty',
               }}
             >
-              Krishnadham was registered in 1998 and has been governed since by an
-              elected managing committee. The society is now preparing for
-              redevelopment, and every document in that process is published here.
+              Krishnadham was registered in December 2002 and has been governed
+              since by an elected managing committee. The society is now preparing
+              for redevelopment, and every document in that process is published
+              here.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 30 }}>

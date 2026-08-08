@@ -175,7 +175,7 @@ export default function Hero({ photo }: { photo?: string }) {
               color: '#B08D57',
             }}
           >
-            Established 1998 &middot; Registered co&#8209;operative housing society
+            Registered 2002 &middot; Seventy&#8209;two flats on a single wing
           </span>
           <h1
             data-hero-head

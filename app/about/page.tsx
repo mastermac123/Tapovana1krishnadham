@@ -9,7 +9,7 @@ import { MAP_GRID } from '@/lib/patterns';
 export const metadata: Metadata = {
   title: 'About us — Tapovan A-1 Krishnadham',
   description:
-    'Registered in 1998 and governed since by an elected managing committee.',
+    'Registered in December 2002 and governed since by an elected managing committee.',
 };
 
 const eyebrow = {
@@ -20,13 +20,16 @@ const eyebrow = {
   color: '#B08D57',
 };
 
+/** Every value here comes from the society's own "About us" record. */
 const REGISTRATION = [
   {
     label: 'Registered name',
-    value: 'Tapovan A‑1 Krishnadham Co‑op. Housing Society Ltd.',
+    value: 'Tapovan A‑1 Krishnadham Co‑op. Hsg. Society Ltd.',
   },
-  { label: 'Registration number', value: 'MUM/W‑P/HSG/TC/11827/2002‑03' },
-  { label: 'Date of registration', value: '1998' },
+  { label: 'Registration number', value: 'Mum/W.P./HSG/TC/11827/2002‑03' },
+  { label: 'Date of registration', value: '11 December 2002' },
+  { label: 'Members', value: 'Seventy‑two flats, ground plus seven floors' },
+  { label: 'Land held', value: '3,935.33 sq. m. in the society’s possession' },
 ];
 
 export default function AboutPage() {
@@ -34,7 +37,9 @@ export default function AboutPage() {
     <>
       <PageHeader
         eyebrow="About us"
-        title={'Twenty‑eight years on the same lane.'}
+        /* Phrased by date rather than by a count of years, so it cannot quietly
+           go stale on an anniversary the way "Twenty-three years" would. */
+        title={'On the same lane since 2002.'}
         maxWidth={900}
       />
 
@@ -64,10 +69,10 @@ export default function AboutPage() {
               textWrap: 'pretty',
             }}
           >
-            Tapovan A&#8209;1 was completed and occupied in 1998, and registered the
-            same year as a co&#8209;operative housing society. The wing has stood
-            since with its original fa&ccedil;ade, its courtyard and its single lift
-            lobby.
+            Tapovan A&#8209;1 Krishnadham was registered as a co&#8209;operative
+            housing society on 11 December 2002. The wing rises ground plus seven
+            floors and holds seventy&#8209;two flats, set back from Rani Sati Marg
+            Extension behind its own courtyard.
           </p>
           <p
             style={{
@@ -79,10 +84,12 @@ export default function AboutPage() {
               textWrap: 'pretty',
             }}
           >
-            The society is administered by an elected managing committee that meets
-            through the year and reports to the general body. Its present work is the
-            redevelopment of the wing, conducted through open tender, with every
-            quotation and set of minutes published on this site.
+            The society holds 3,935.33 square metres in all &mdash; the plot itself,
+            its recreation ground, an undivided share of the internal road and the
+            road setback. It is administered by an elected managing committee that
+            meets through the year and reports to the general body. Its present work
+            is the redevelopment of the wing, conducted through open tender, with
+            every quotation and set of minutes published on this site.
           </p>
         </Reveal>
       </section>
@@ -108,9 +115,9 @@ export default function AboutPage() {
             <span className="detail-row__value" style={{ lineHeight: 1.35 }}>
               Tapovan A&#8209;1, Krishnadham,
               <br />
-              Rani Sati Marg Extension, W.E. Highway,
+              Rani Sati Marg Extn., W.E. Highway,
               <br />
-              Malad (E)
+              Malad (E), Mumbai 400097
             </span>
           </Reveal>
         </div>

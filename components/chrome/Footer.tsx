@@ -18,7 +18,7 @@ export default function Footer() {
       <div className="footer__brand">
         <span className="footer__brand-name">Tapovan A&#8209;1 Krishnadham</span>
         <span className="footer__brand-sub">
-          Co&#8209;operative Housing Society Ltd. &middot; Established 1998
+          Co&#8209;operative Housing Society Ltd. &middot; Registered 2002
         </span>
       </div>
 
