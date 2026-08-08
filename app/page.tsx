@@ -111,7 +111,7 @@ export default async function HomePage() {
         amount={0.16}
         inset="-16% 0"
         src={photo}
-        alt="The courtyard at Tapovan A-1 Krishnadham"
+        alt="The courtyard at Tapovan A-1 Krishnadham, looking towards the wing"
         caption="Full&#8209;bleed courtyard photograph"
       />
 

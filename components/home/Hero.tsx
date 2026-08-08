@@ -115,7 +115,7 @@ export default function Hero({ photo }: { photo?: string }) {
         {photo ? (
           <Image
             src={photo}
-            alt="Tapovan A-1 Krishnadham at night"
+            alt="The front elevation of Tapovan A-1 Krishnadham, seen from the courtyard"
             fill
             priority
             sizes="100vw"
