@@ -728,6 +728,60 @@ body.is-locked {
   gap: 28px;
 }
 
+/* --- The society in figures -------------------------------------------
+   Sits over the courtyard band's woven ground. Type comes from the existing
+   scale: Display M for the numerals, the Label token beneath.
+   ---------------------------------------------------------------------- */
+
+.figures {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: var(--section-y) var(--section-x);
+}
+
+.figures__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(28px, 4vw, 72px);
+  width: 100%;
+}
+
+.figures__item {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(36, 36, 36, 0.16);
+}
+
+.figures__value {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(34px, 4.2vw, 60px);
+  line-height: 1;
+  letter-spacing: -0.015em;
+  color: var(--color-forest);
+  /* Tabular figures keep the four columns optically aligned. */
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.figures__label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-champagne);
+}
+
+@media (max-width: 899px) {
+  .figures__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 28px;
+  }
+}
+
 /* A label / value line — registration table, contact details. */
 .detail-row {
   display: grid;

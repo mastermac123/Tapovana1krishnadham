@@ -25,6 +25,16 @@ import ButtonSolid from '@/components/ui/ButtonSolid';
 const useIsomorphicLayoutEffect =
   typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
+/**
+ * How strongly the photograph reads over the forest ground.
+ *
+ * The building is a pale ochre block against a white sky; at full strength it
+ * overwhelms the type and the site loses the green it is built on. Held at a
+ * third and blended for luminosity only, it keeps the shape and texture of the
+ * building while the colour stays the society's own.
+ */
+const PHOTO_STRENGTH = 0.32;
+
 export default function Hero({ photo }: { photo?: string }) {
   const rootRef = useRef<HTMLElement>(null);
 
@@ -100,6 +110,7 @@ export default function Hero({ photo }: { photo?: string }) {
         minHeight: '100vh',
         padding: '0 clamp(24px, 4.4vw, 64px) clamp(56px, 6vw, 88px)',
         overflow: 'hidden',
+        background: '#17342C',
       }}
     >
       <div
@@ -119,7 +130,13 @@ export default function Hero({ photo }: { photo?: string }) {
             fill
             priority
             sizes="100vw"
-            style={{ objectFit: 'cover' }}
+            style={{
+              objectFit: 'cover',
+              opacity: PHOTO_STRENGTH,
+              // Luminosity keeps the building's light and shade but takes its
+              // colour from the forest ground beneath.
+              mixBlendMode: 'luminosity',
+            }}
           />
         ) : null}
       </div>

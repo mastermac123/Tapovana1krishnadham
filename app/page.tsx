@@ -27,6 +27,14 @@ const eyebrow = {
   color: '#B08D57',
 };
 
+/** From the society's own "About us" record. */
+const FIGURES = [
+  { value: '72', label: 'Flats' },
+  { value: 'G + 7', label: 'Floors' },
+  { value: '3,935', label: 'Sq. metres held' },
+  { value: '2002', label: 'Registered' },
+];
+
 const linkLabel = {
   alignSelf: 'flex-start' as const,
   gap: 8,
@@ -105,16 +113,27 @@ export default async function HomePage() {
       </section>
 
       {/* Full-bleed courtyard */}
+      {/* The photograph appears once, in the hero. This band keeps the
+          prototype's woven ground and its drift, and carries the society's own
+          figures rather than a caption announcing a missing photograph. */}
       <ImageBand
-        height={720}
+        minHeight={560}
         ground="#EDE8DD"
         pattern={COURTYARD_WEAVE}
         amount={0.16}
         inset="-16% 0"
-        src={photo}
-        alt="The courtyard at Tapovan A-1 Krishnadham, looking towards the wing"
-        caption="Full&#8209;bleed courtyard photograph"
-      />
+      >
+        <div className="figures">
+          <Reveal className="figures__grid">
+            {FIGURES.map((figure) => (
+              <span key={figure.label} className="figures__item">
+                <span className="figures__value">{figure.value}</span>
+                <span className="figures__label">{figure.label}</span>
+              </span>
+            ))}
+          </Reveal>
+        </div>
+      </ImageBand>
 
       {/* 02 — Notice board */}
       <section className="section-split" style={{ borderBottom: '1px solid #E2DDD2' }}>
@@ -227,12 +246,6 @@ export default async function HomePage() {
           pattern={ENTRANCE_WEAVE}
           amount={0.12}
           inset="-14% 0"
-          src={photo}
-          alt="The entrance to Tapovan A-1 Krishnadham"
-          caption="Entrance detail"
-          captionColor="rgba(248, 246, 241, 0.36)"
-          captionSize={10.5}
-          captionTracking="0.28em"
           dark
         />
       </section>
