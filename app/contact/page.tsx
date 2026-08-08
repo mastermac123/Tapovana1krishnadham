@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Reveal from '@/components/motion/Reveal';
-import ImageBand from '@/components/ui/ImageBand';
+import MapBand from '@/components/ui/MapBand';
 import PageHeader from '@/components/ui/PageHeader';
-import { MAP_GRID } from '@/lib/patterns';
 
 /** Prototype `sc-if value="{{ isContact }}"`. */
 
@@ -98,17 +97,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <ImageBand
-        reveal
-        height={620}
-        ground="#EDE8DD"
-        pattern={MAP_GRID}
-        amount={0.1}
-        inset="-12% 0"
-        caption={'Google map — society address'}
-        captionColor="rgba(36, 36, 36, 0.45)"
-        rule
-      />
+      <MapBand height={620} />
     </>
   );
 }

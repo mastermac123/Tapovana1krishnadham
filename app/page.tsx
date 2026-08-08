@@ -4,6 +4,7 @@ import WordRise from '@/components/motion/WordRise';
 import ButtonGhost from '@/components/ui/ButtonGhost';
 import ImageBand from '@/components/ui/ImageBand';
 import LinkRule from '@/components/ui/LinkRule';
+import MapBand from '@/components/ui/MapBand';
 import Row from '@/components/ui/Row';
 import { latestDocuments } from '@/lib/documents';
 import { fromDbType } from '@/lib/doc-types';
@@ -240,14 +241,7 @@ export default async function HomePage() {
           </Reveal>
         </div>
 
-        <ImageBand
-          minHeight={620}
-          ground="#14231F"
-          pattern={ENTRANCE_WEAVE}
-          amount={0.12}
-          inset="-14% 0"
-          dark
-        />
+        <MapBand minHeight={620} />
       </section>
     </>
   );

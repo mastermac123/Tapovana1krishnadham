@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
 import Reveal from '@/components/motion/Reveal';
-import ImageBand from '@/components/ui/ImageBand';
+import MapBand from '@/components/ui/MapBand';
 import PageHeader from '@/components/ui/PageHeader';
-import { MAP_GRID } from '@/lib/patterns';
 
 /** Prototype `sc-if value="{{ isAbout }}"`. */
 
@@ -123,18 +122,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <ImageBand
-        reveal
-        height={560}
-        ground="#EDE8DD"
-        pattern={MAP_GRID}
-        amount={0.1}
-        inset="-12% 0"
-        caption={'Google map — registered address'}
-        captionColor="rgba(36, 36, 36, 0.45)"
-        rule
-        style={{ borderBottom: '1px solid #E2DDD2' }}
-      />
+      <MapBand height={560} style={{ borderBottom: '1px solid #E2DDD2' }} />
     </>
   );
 }
