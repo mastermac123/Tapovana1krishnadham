@@ -6,8 +6,11 @@ import { committeeMembers } from '@/lib/committee';
 
 /** Prototype `sc-if value="{{ isCommittee }}"`. */
 
-/** Read from the database — must not be prerendered with build-time members. */
-export const dynamic = 'force-dynamic';
+/**
+ * Prerendered, and rebuilt when the committee tag is invalidated — which
+ * saving from the desk does. The list changes a couple of times a year; it
+ * does not warrant a server render per visit.
+ */
 
 export const metadata: Metadata = {
   title: 'Committee members — Tapovan A-1 Krishnadham',

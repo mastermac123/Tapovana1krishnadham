@@ -2,6 +2,7 @@
 
 import { forwardRef, type AnchorHTMLAttributes, type MouseEvent } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCurtain } from '@/components/chrome/Curtain';
 
 type Props = AnchorHTMLAttributes<HTMLAnchorElement> & {
@@ -13,11 +14,24 @@ type Props = AnchorHTMLAttributes<HTMLAnchorElement> & {
  * external hrefs fall through to the browser, so the link stays a link.
  */
 const CurtainLink = forwardRef<HTMLAnchorElement, Props>(function CurtainLink(
-  { href, onClick, children, ...rest },
+  { href, onClick, onMouseEnter, onFocus, children, ...rest },
   ref
 ) {
   const { navigate } = useCurtain();
+  const router = useRouter();
   const external = /^(https?:|mailto:|tel:)/.test(href);
+
+  /**
+   * Start fetching on hover, well before the click.
+   *
+   * Next's own viewport prefetching is disabled in development and does not
+   * cover a link the reader has only just reached, so a first click otherwise
+   * pays the full round trip to the database. Warming on intent means the page
+   * is usually already there by the time the curtain has come down.
+   */
+  function warm() {
+    if (!external) router.prefetch?.(href);
+  }
 
   function handleClick(e: MouseEvent<HTMLAnchorElement>) {
     onClick?.(e);
@@ -36,7 +50,20 @@ const CurtainLink = forwardRef<HTMLAnchorElement, Props>(function CurtainLink(
   }
 
   return (
-    <Link ref={ref} href={href} onClick={handleClick} {...rest}>
+    <Link
+      ref={ref}
+      href={href}
+      onClick={handleClick}
+      onMouseEnter={(e) => {
+        onMouseEnter?.(e);
+        warm();
+      }}
+      onFocus={(e) => {
+        onFocus?.(e);
+        warm();
+      }}
+      {...rest}
+    >
       {children}
     </Link>
   );

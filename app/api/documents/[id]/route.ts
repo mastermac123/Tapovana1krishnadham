@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 import {
   notFound,
@@ -8,6 +8,7 @@ import {
   unauthorized,
 } from '@/lib/api';
 import { db } from '@/lib/db';
+import { DOCUMENTS_TAG } from '@/lib/documents';
 import { updateDocumentSchema } from '@/lib/validation';
 
 export const runtime = 'nodejs';
@@ -30,6 +31,7 @@ export async function PATCH(
 
   await db.document.update({ where: { id }, data: parsed.data });
 
+  revalidateTag(DOCUMENTS_TAG);
   revalidatePath('/notices');
   revalidatePath('/');
   return NextResponse.json({ ok: true });
@@ -60,6 +62,7 @@ export async function DELETE(
     data: { deletedAt: new Date() },
   });
 
+  revalidateTag(DOCUMENTS_TAG);
   revalidatePath('/notices');
   revalidatePath('/');
   return NextResponse.json({ ok: true });

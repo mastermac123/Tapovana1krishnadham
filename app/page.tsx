@@ -14,11 +14,10 @@ import { buildingPhoto } from '@/lib/photos';
 /** Prototype `sc-if value="{{ isHome }}"`. */
 
 /**
- * The latest three papers come from the database, so this page must not be
- * baked at build time — it would show whatever was published the day the site
- * was deployed, for ever.
+ * Prerendered, and rebuilt when the documents tag is invalidated — which
+ * publishing, editing and deleting all do. Rendering this on every request
+ * instead cost about 600ms a visit for data that changes a few times a month.
  */
-export const dynamic = 'force-dynamic';
 
 const eyebrow = {
   fontSize: 11,

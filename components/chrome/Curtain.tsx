@@ -51,6 +51,20 @@ export function CurtainProvider({ children }: { children: ReactNode }) {
       }
 
       busyRef.current = true;
+
+      /**
+       * Fetch during the descent, not after it.
+       *
+       * The curtain takes 620ms to come down and the route takes roughly as
+       * long to arrive. Done in sequence that is two waits stacked; started
+       * here, the page is already in flight — usually already cached — by the
+       * time the curtain is down and `push` can swap it instantly.
+       *
+       * The push itself still waits for full cover: swapping mid-descent would
+       * show the new page through the uncovered strip.
+       */
+      router.prefetch?.(href);
+
       gsap
         .timeline({ onComplete: () => (busyRef.current = false) })
         .set(panel, { transformOrigin: 'bottom center' })

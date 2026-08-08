@@ -1,5 +1,7 @@
 import 'server-only';
 
+import { unstable_cache } from 'next/cache';
+
 import { db } from '@/lib/db';
 import { DB_LABEL, DB_TAG, fromDbType, toDbType } from '@/lib/doc-types';
 import type { DocType } from '@/lib/generated/prisma/enums';
@@ -10,7 +12,16 @@ import type { NoticeCounts, NoticeType } from '@/lib/site';
  *
  * Deleted documents are excluded everywhere here — `deletedAt` is a curtain,
  * not a filter anyone can lift from the outside.
+ *
+ * CACHING
+ * The database is in Singapore and the readers are in Mumbai, so every query
+ * costs roughly a quarter-second of pure distance. The public reads are cached
+ * against the DOCUMENTS_TAG and invalidated the moment the secretary publishes,
+ * edits or deletes — so a page change costs nothing, and a newly published
+ * notice still appears at once.
  */
+
+export const DOCUMENTS_TAG = 'documents';
 
 export type { DocType };
 export { DB_LABEL as TYPE_LABEL, DB_TAG as TAG, fromDbType, toDbType };
@@ -92,17 +103,21 @@ const SELECT = {
 } as const;
 
 /** Documents for a notice-board filter. `all` keeps every type. */
-export async function documentsFor(filter: NoticeType): Promise<DocumentRow[]> {
-  const rows = await db.document.findMany({
-    where: {
-      deletedAt: null,
-      ...(filter === 'all' ? {} : { type: toDbType(filter) }),
-    },
-    orderBy: { uploadedAt: 'desc' },
-    select: SELECT,
-  });
-  return rows.map(present);
-}
+export const documentsFor = unstable_cache(
+  async (filter: NoticeType): Promise<DocumentRow[]> => {
+    const rows = await db.document.findMany({
+      where: {
+        deletedAt: null,
+        ...(filter === 'all' ? {} : { type: toDbType(filter) }),
+      },
+      orderBy: { uploadedAt: 'desc' },
+      select: SELECT,
+    });
+    return rows.map(present);
+  },
+  ['documents-for'],
+  { tags: [DOCUMENTS_TAG] }
+);
 
 export async function documentsOfType(type: DocType): Promise<DocumentRow[]> {
   const rows = await db.document.findMany({
@@ -114,39 +129,52 @@ export async function documentsOfType(type: DocType): Promise<DocumentRow[]> {
 }
 
 /** The home page's three most recent papers, all types together. */
-export async function latestDocuments(take = 3): Promise<DocumentRow[]> {
-  const rows = await db.document.findMany({
-    where: { deletedAt: null },
-    orderBy: { uploadedAt: 'desc' },
-    take,
-    select: SELECT,
-  });
-  return rows.map(present);
-}
+export const latestDocuments = unstable_cache(
+  async (take = 3): Promise<DocumentRow[]> => {
+    const rows = await db.document.findMany({
+      where: { deletedAt: null },
+      orderBy: { uploadedAt: 'desc' },
+      take,
+      select: SELECT,
+    });
+    return rows.map(present);
+  },
+  ['documents-latest'],
+  { tags: [DOCUMENTS_TAG] }
+);
 
-/** Counts for the nav dropdown and the notice-board filters. */
-export async function documentCounts(): Promise<NoticeCounts> {
-  const grouped = await db.document.groupBy({
-    by: ['type'],
-    where: { deletedAt: null },
-    _count: { _all: true },
-  });
+/**
+ * Counts for the nav dropdown and the notice-board filters.
+ *
+ * Runs in the root layout, so it is on the path of *every* page. Uncached it
+ * added a round trip to Singapore to each one.
+ */
+export const documentCounts = unstable_cache(
+  async (): Promise<NoticeCounts> => {
+    const grouped = await db.document.groupBy({
+      by: ['type'],
+      where: { deletedAt: null },
+      _count: { _all: true },
+    });
 
-  const counts: NoticeCounts = {
-    all: 0,
-    circular: 0,
-    quotation: 0,
-    minutes: 0,
-  };
+    const counts: NoticeCounts = {
+      all: 0,
+      circular: 0,
+      quotation: 0,
+      minutes: 0,
+    };
 
-  for (const group of grouped) {
-    const n = group._count._all;
-    counts[fromDbType(group.type)] = n;
-    counts.all += n;
-  }
+    for (const group of grouped) {
+      const n = group._count._all;
+      counts[fromDbType(group.type)] = n;
+      counts.all += n;
+    }
 
-  return counts;
-}
+    return counts;
+  },
+  ['documents-counts'],
+  { tags: [DOCUMENTS_TAG] }
+);
 
 /** Narrows an arbitrary `?type=` value to a filter the board understands. */
 export function parseNoticeType(raw: string | string[] | undefined): NoticeType {

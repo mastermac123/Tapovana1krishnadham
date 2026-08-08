@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 import { badRequest, parseBody, requireSecretary, unauthorized } from '@/lib/api';
 import { db } from '@/lib/db';
+import { DOCUMENTS_TAG } from '@/lib/documents';
 import { deleteObject, headObject, readObjectPrefix } from '@/lib/r2';
 import { MAX_UPLOAD_BYTES, sniffMime } from '@/lib/uploads';
 import { publishSchema } from '@/lib/validation';
@@ -66,6 +67,7 @@ export async function POST(request: Request) {
       },
     });
 
+    revalidateTag(DOCUMENTS_TAG);
     revalidatePath('/notices');
     revalidatePath('/');
     return NextResponse.json({ id: document.id }, { status: 201 });

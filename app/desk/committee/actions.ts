@@ -1,8 +1,9 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 import { auth } from '@/lib/auth';
+import { COMMITTEE_TAG } from '@/lib/committee';
 import { db } from '@/lib/db';
 import { committeeSchema } from '@/lib/validation';
 
@@ -72,6 +73,9 @@ export async function saveCommittee(
     return { error: 'That could not be saved. Try again.' };
   }
 
+  // The tag is what the cached read is keyed on; the paths cover the rendered
+  // pages themselves.
+  revalidateTag(COMMITTEE_TAG);
   revalidatePath('/committee');
   revalidatePath('/desk/committee');
 

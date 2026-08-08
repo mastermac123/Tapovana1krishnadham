@@ -23,6 +23,17 @@ export const authConfig = {
   // httpOnly and sameSite=lax are Auth.js defaults; `secure` is forced on in
   // production so the session cookie can never travel over plain HTTP.
   useSecureCookies: process.env.NODE_ENV === 'production',
+
+  /**
+   * Auth.js refuses to serve a production build unless it is told the host is
+   * trusted — otherwise every /api/auth request fails with UntrustedHost and
+   * nobody can sign in. Vercel is detected automatically; anywhere else, and
+   * on a local `next start`, this is what makes it work.
+   *
+   * Safe here because the only provider is credentials: there is no OAuth
+   * callback URL for a forged Host header to redirect a token to.
+   */
+  trustHost: true,
   callbacks: {
     authorized({ auth, request }) {
       const onDesk = request.nextUrl.pathname.startsWith('/desk');
