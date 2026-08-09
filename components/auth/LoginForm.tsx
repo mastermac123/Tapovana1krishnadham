@@ -96,8 +96,9 @@ export default function LoginForm() {
             color: '#5C5A55',
           }}
         >
-          One&#8209;time password verification follows. Three failed attempts from
-          an address lock it for thirty minutes; every attempt is recorded.
+          Three failed attempts from one address lock it for thirty minutes, and
+          repeated failures lock the account itself whatever address they come
+          from. Every attempt is recorded.
         </p>
       </Reveal>
     </form>
