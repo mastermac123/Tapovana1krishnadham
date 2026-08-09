@@ -25,7 +25,23 @@ import { DUR, EASE, prefersReducedMotion } from '@/lib/motion';
  * and blocks entering together keep the prototype's 0.08s queue stagger.
  */
 
-type Record_ = { tl: gsap.core.Timeline };
+type Record_ = {
+  tl: gsap.core.Timeline;
+  /** Applies the finished state outright, for when the timeline cannot run. */
+  land: () => void;
+  registeredAt: number;
+};
+
+/**
+ * How long a block may sit on screen still clipped before it is simply shown.
+ *
+ * GSAP advances on requestAnimationFrame. If those frames never come — a
+ * background tab, a browser that has stopped compositing, an animation that
+ * throws — a timeline that has been told to play still never arrives, and the
+ * text stays invisible. `gsap.set` applies immediately and does not wait for a
+ * frame, so this is the escape hatch that guarantees the words appear.
+ */
+const LAND_AFTER_MS = 4000;
 
 const registry = new Map<Element, Record_>();
 const queued: Element[] = [];
@@ -65,9 +81,65 @@ function flush() {
     const rec = registry.get(el);
     if (!rec) continue;
     rec.tl.delay(Math.min(q * 0.08, 0.4)).play(0);
+    // Deliberately left in the registry: told to play is not the same as
+    // finished, and the sweep is what rescues a timeline that never advances.
+    // The timeline's own onComplete removes it.
     q += 1;
   }
   queued.length = 0;
+}
+
+/**
+ * Backstop for a reveal that never fired.
+ *
+ * The whole point of the entrance is that content starts clipped, so anything
+ * that stops the observer delivering — a throttled background tab, an
+ * interrupted scroll, a frame the browser never composited — leaves that
+ * content invisible for good. Text a reader cannot see is worse than text that
+ * arrives without ceremony, so a slow sweep lands anything that is on screen
+ * and still waiting.
+ *
+ * The hero has carried a fail-safe like this from the start; the reveals
+ * should never have gone without one.
+ */
+const SWEEP_MS = 1200;
+let sweep: ReturnType<typeof setInterval> | undefined;
+
+function startSweep() {
+  if (sweep || typeof window === 'undefined') return;
+  sweep = setInterval(() => {
+    if (registry.size === 0) {
+      clearInterval(sweep);
+      sweep = undefined;
+      return;
+    }
+    const vh = window.innerHeight || 900;
+    const now = Date.now();
+
+    for (const [el, rec] of registry) {
+      const r = el.getBoundingClientRect();
+      const onScreen = r.top < vh * 0.9 && r.bottom > -60;
+
+      // Waited long enough while visible: show it, animation or not.
+      if (onScreen && now - rec.registeredAt > LAND_AFTER_MS) {
+        rec.tl.kill();
+        rec.land();
+        registry.delete(el);
+        observer?.unobserve(el);
+        const i = queued.indexOf(el);
+        if (i >= 0) queued.splice(i, 1);
+        continue;
+      }
+
+      if (queued.includes(el)) continue;
+      if (onScreen) {
+        observer?.unobserve(el);
+        queued.push(el);
+      }
+    }
+
+    if (queued.length) flush();
+  }, SWEEP_MS);
 }
 
 function ensureObserver(): IntersectionObserver | null {
@@ -120,11 +192,28 @@ export default function Reveal({
     if (prefersReducedMotion()) return;
 
     const ctx = gsap.context(() => {
-      const tl = gsap.timeline({ paused: true });
+      const tl = gsap.timeline({
+        paused: true,
+        onComplete: () => registry.delete(block),
+      });
       let at = 0;
 
       const kids = Array.from(block.children) as HTMLElement[];
       const targets: HTMLElement[] = kids.length ? kids : [block];
+
+      /** The finished state, applied outright. See LAND_AFTER_MS. */
+      const land = () => {
+        for (const kid of targets) {
+          const words = kid.matches('h1, h2')
+            ? kid.querySelectorAll<HTMLElement>('[data-w]')
+            : null;
+          if (words && words.length) {
+            gsap.set(words, { yPercent: 0 });
+          } else {
+            gsap.set(kid, { clipPath: 'none', y: 0, willChange: 'auto' });
+          }
+        }
+      };
 
       for (const kid of targets) {
         const words = kid.matches('h1, h2')
@@ -165,8 +254,9 @@ export default function Reveal({
         at += DUR.revealStagger;
       }
 
-      registry.set(block, { tl });
+      registry.set(block, { tl, land, registeredAt: Date.now() });
       ensureObserver()?.observe(block);
+      startSweep();
     }, block);
 
     return () => {
