@@ -18,7 +18,12 @@ const KEYS = [
   'AUTH_SECRET',
   'SEED_SECRETARY_EMAIL',
   'SEED_SECRETARY_PASSWORD',
+  'RESEND_API_KEY',
+  'EMAIL_FROM',
 ];
+
+/** Password reset is the only thing these two affect. */
+const OPTIONAL = new Set(['RESEND_API_KEY', 'EMAIL_FROM']);
 
 const ENV_PATH = path.join(import.meta.dirname, '..', '.env.local');
 
@@ -34,8 +39,9 @@ let missing = 0;
 for (const key of KEYS) {
   const match = source.match(new RegExp(`^${key}\\s*=\\s*"([^"]*)"`, 'm'));
   const value = match ? match[1] : '';
-  if (!value) missing += 1;
-  console.log(`  ${key.padEnd(26)} ${value ? 'set' : 'EMPTY'}`);
+  if (!value && !OPTIONAL.has(key)) missing += 1;
+  const state = value ? 'set' : OPTIONAL.has(key) ? 'empty (reset disabled)' : 'EMPTY';
+  console.log(`  ${key.padEnd(26)} ${state}`);
 }
 
 console.log(

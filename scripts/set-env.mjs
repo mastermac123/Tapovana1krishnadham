@@ -21,6 +21,20 @@ import path from 'node:path';
 const ENV_PATH = path.join(import.meta.dirname, '..', '.env.local');
 const REPROMPT_ALL = argv.includes('--all');
 
+/**
+ * Values may also be given as `--NAME=value`, which skips the prompt for that
+ * one. Convenient, but it leaves the value in your shell history — fine for
+ * something you are about to rotate anyway, worth avoiding otherwise.
+ */
+const fromArgs = new Map(
+  argv
+    .filter((a) => a.startsWith('--') && a.includes('=') && a !== '--all')
+    .map((a) => {
+      const eq = a.indexOf('=');
+      return [a.slice(2, eq), a.slice(eq + 1)];
+    })
+);
+
 /** Prompt text per variable, in the order they are asked. */
 const PROMPTS = {
   R2_ACCESS_KEY_ID: 'Cloudflare R2 — Access Key ID',
@@ -80,6 +94,15 @@ const rl = createInterface({ input: stdin, output: stdout });
 console.log('\nPaste each value and press Enter. Blank keeps the current one.\n');
 
 for (const [key, label] of Object.entries(PROMPTS)) {
+  const given = fromArgs.get(key);
+  if (given !== undefined) {
+    const problem = validate(key, given);
+    if (problem) problems.push(`${key} ${problem}`);
+    source = writeValue(source, key, given);
+    console.log(`  ${key.padEnd(24)} set from argument  ${mask(given)}`);
+    continue;
+  }
+
   const current = readValue(source, key);
   if (current && !REPROMPT_ALL) {
     console.log(`  ${key.padEnd(24)} already set  ${mask(current)}`);

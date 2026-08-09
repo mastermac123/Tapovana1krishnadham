@@ -102,19 +102,39 @@ Everything through Secretary desk is **built (frontend only)**. Phase 2
   entrance positions. `lib/photos.ts` checks it exists server-side, so a
   missing file falls back to the prototype's weave rather than 404ing.
 
-## Phase 2 progress
+## Phase 2 — complete and proven
 
-Written but **not yet run against real infrastructure** — no database or R2
-credentials exist on this machine:
+Every path has been exercised against the real Neon database and R2 bucket:
+sign-in, publish, edit, recoverable delete, committee save, account changes,
+and password reset by emailed code. `scripts/test-e2e.mjs` drives the whole
+secretary journey and passes 17 checks against a **production** build — run it
+after any change to the desk or the API.
 
-- `prisma/schema.prisma`, `lib/db.ts`, `prisma/seed.ts` — no migration applied
-- `lib/r2.ts`, `lib/uploads.ts` — magic-byte sniffing unit-tested, R2 calls untested
-- `lib/auth.ts`, `lib/auth.config.ts`, `lib/rate-limit.ts`, `middleware.ts`,
-  `app/login/actions.ts` — sign-in untested
+Not done: **deployment**. The site runs only on the developer's machine.
 
-Still to build: the documents API (signed upload, verify, publish, delete),
-committee persistence, public pages reading from the database, OTP, and
-password reset.
+### Diagnostics kept in scripts/
+
+`test-e2e.mjs` (whole journey) · `test-r2.mjs` (bucket round trip) ·
+`bench-db.mjs` (database latency) · `check-env.mjs` · `whoami.mjs` ·
+`attempts.mjs` · `peek-resets.mjs` · `peek-committee.mjs` ·
+`set-secretary-email.mjs` · `set-secretary-password.mjs` ·
+`prune-secretaries.mjs` · `set-r2-cors.mjs` / `check-r2-cors.mjs`
+
+### Things that cost real time to find
+
+- **Never run `npm run build` while `npm run dev` is live.** The production
+  build overwrites files the dev server holds open and you get
+  `Cannot find module './611.js'`. Delete `.next` and restart.
+- **Auth.js needs `trustHost: true`** or every `/api/auth` request 500s with
+  `UntrustedHost` on a production build. It does not show up in dev.
+- **Presigned R2 uploads need `requestChecksumCalculation: 'WHEN_REQUIRED'`.**
+  Otherwise the SDK signs a checksum computed over an empty payload and R2
+  rejects the real file.
+- **`force-dynamic` on a page costs ~600ms a visit.** Prefer a cached read plus
+  `revalidateTag` on mutation. The database answers in 66ms; it is rarely the
+  cause of a slow page.
+- **Test against `next start`, not `next dev`.** Two of the above were
+  invisible in development.
 
 `LoginAttempt` is the only table that grows without a ceiling — a bot hitting
 the login page writes a row per try. Prune to the last 90 days: long enough to
