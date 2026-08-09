@@ -21,23 +21,39 @@ export const LOCK_MINUTES = 30;
 /**
  * The caller's address.
  *
- * `cf-connecting-ip` is set by Cloudflare's edge and cannot be forged by the
- * client. `x-forwarded-for` can be, so it is the last resort and only its
- * left-most entry is read. If the app is ever deployed without a proxy in
- * front, this degrades to 'unknown' and the limits become global rather than
- * per-address — which fails closed, not open.
+ * EVERY header here is client-supplied unless a proxy we trust overwrote it,
+ * so which one is safe depends entirely on what sits in front of the app.
+ * Reading the wrong one is not a small mistake: an attacker who can choose
+ * their own "address" simply changes it each request and the lockout below
+ * never trips.
+ *
+ *   x-vercel-forwarded-for  Vercel sets this and strips any client copy.
+ *   cf-connecting-ip        Cloudflare sets this at its edge — but only if you
+ *                           are actually behind Cloudflare. Anywhere else a
+ *                           client can invent it, which is why it is opt-in
+ *                           through TRUST_CLOUDFLARE_IP.
+ *   x-forwarded-for         A list the client can prepend to. The entry we can
+ *                           trust is the *last* one, appended by the nearest
+ *                           proxy — never the first, which is whatever the
+ *                           caller typed.
+ *
+ * With nothing in front, this returns 'unknown' and the limits apply globally
+ * rather than per address: annoying under attack, but it fails closed.
  */
 export function clientIp(headers: Headers): string {
-  const cf = headers.get('cf-connecting-ip');
-  if (cf) return cf.trim();
+  const vercel = headers.get('x-vercel-forwarded-for');
+  if (vercel) return vercel.split(',')[0]!.trim();
 
-  const real = headers.get('x-real-ip');
-  if (real) return real.trim();
+  if (process.env.TRUST_CLOUDFLARE_IP === 'true') {
+    const cf = headers.get('cf-connecting-ip');
+    if (cf) return cf.trim();
+  }
 
   const forwarded = headers.get('x-forwarded-for');
   if (forwarded) {
-    const first = forwarded.split(',')[0]?.trim();
-    if (first) return first;
+    const hops = forwarded.split(',').map((h) => h.trim()).filter(Boolean);
+    const nearest = hops[hops.length - 1];
+    if (nearest) return nearest;
   }
 
   return 'unknown';
@@ -65,6 +81,44 @@ export async function lockState(ip: string): Promise<LockState> {
 
   // recent[0] is the newest failure; the lock runs from there.
   const until = new Date(recent[0].createdAt.getTime() + LOCK_MINUTES * 60_000);
+  return until > new Date() ? { locked: true, until } : { locked: false };
+}
+
+/**
+ * Whether this *account* is being guessed at, regardless of where from.
+ *
+ * The IP lock above is only as trustworthy as the header it reads, and behind
+ * a home connection or a mobile network an attacker can often change address
+ * at will. Locking the account itself removes that escape: rotate through a
+ * thousand addresses and the fifth wrong password still stops you.
+ *
+ * Deliberately more forgiving than the IP rule — a legitimate secretary who
+ * mistypes should not be locked out by someone else's attack on their account,
+ * so this window is short and clears on the first success.
+ */
+export const EMAIL_FAILURE_LIMIT = 8;
+export const EMAIL_WINDOW_MINUTES = 15;
+
+export async function emailLockState(email: string): Promise<LockState> {
+  const since = new Date(Date.now() - EMAIL_WINDOW_MINUTES * 60_000);
+
+  const recent = await db.loginAttempt.findMany({
+    where: { email, createdAt: { gte: since } },
+    orderBy: { createdAt: 'desc' },
+    select: { success: true, createdAt: true },
+  });
+
+  // A success inside the window means the real owner got in; clear the streak.
+  const sinceLastSuccess = [];
+  for (const attempt of recent) {
+    if (attempt.success) break;
+    sinceLastSuccess.push(attempt);
+  }
+
+  if (sinceLastSuccess.length < EMAIL_FAILURE_LIMIT) return { locked: false };
+
+  const newest = sinceLastSuccess[0]!.createdAt;
+  const until = new Date(newest.getTime() + EMAIL_WINDOW_MINUTES * 60_000);
   return until > new Date() ? { locked: true, until } : { locked: false };
 }
 

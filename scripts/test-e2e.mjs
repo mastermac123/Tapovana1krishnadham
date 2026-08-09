@@ -106,7 +106,23 @@ try {
   });
   const signedIn = [...jar.keys()].some((k) => k.includes('session-token'));
   check('signed in', signedIn, `HTTP ${signIn.status}`);
-  if (!signedIn) throw new Error('no session cookie — cannot continue');
+  if (!signedIn) {
+    /**
+     * The commonest cause by far is a stale password, not a broken build:
+     * SEED_SECRETARY_PASSWORD records what the account was *created* with, and
+     * goes out of date the moment anyone changes it from /desk/account or by
+     * resetting it. Say so, rather than leaving someone hunting a regression.
+     */
+    console.log(
+      '\n  The password in .env.local did not work.\n' +
+        '  It records what the account was created with, so it is stale after\n' +
+        '  any password change or reset. Put the current one in with:\n' +
+        '    node scripts/set-env.mjs --all\n' +
+        '  or set a known one with:\n' +
+        '    node scripts/set-secretary-password.mjs\n'
+    );
+    throw new Error('no session cookie — cannot continue');
+  }
 
   // 3 — the desk now opens
   const desk = await call('/desk/circular');

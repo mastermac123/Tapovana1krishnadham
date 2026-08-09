@@ -5,7 +5,13 @@ import { z } from 'zod';
 
 import { authConfig } from '@/lib/auth.config';
 import { db } from '@/lib/db';
-import { clientIp, recordAttempt } from '@/lib/rate-limit';
+import {
+  clientIp,
+  emailLockState,
+  lockState,
+  overRateLimit,
+  recordAttempt,
+} from '@/lib/rate-limit';
 
 /**
  * Credential verification — HANDOFF.md section 6.
@@ -53,6 +59,28 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const email = parsed.data.email.trim().toLowerCase();
         const ip = clientIp(request.headers);
+
+        /**
+         * The throttle lives here, not in the login form's action.
+         *
+         * /api/auth/callback/credentials is a public endpoint: anything that
+         * guards only the form is walked straight past by posting to it
+         * directly. This is the one place a password is actually checked, so
+         * this is the one place a lock is worth anything.
+         *
+         * A refusal is recorded, so hammering a locked account extends the
+         * lock rather than waiting it out.
+         */
+        const [tooFast, byAddress, byAccount] = await Promise.all([
+          overRateLimit(ip),
+          lockState(ip),
+          emailLockState(email),
+        ]);
+
+        if (tooFast || byAddress.locked || byAccount.locked) {
+          await recordAttempt(ip, email, false);
+          return null;
+        }
 
         const secretary = await db.secretary.findUnique({ where: { email } });
 

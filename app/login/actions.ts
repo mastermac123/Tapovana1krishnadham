@@ -8,6 +8,7 @@ import { signIn } from '@/lib/auth';
 import { credentialsSchema } from '@/lib/auth';
 import {
   clientIp,
+  emailLockState,
   lockState,
   minutesRemaining,
   overRateLimit,
@@ -49,6 +50,19 @@ export async function login(
   if (lock.locked && lock.until) {
     return {
       error: `This address is locked for another ${minutesRemaining(lock.until)} minutes.`,
+    };
+  }
+
+  /**
+   * The account-level lock. The IP rules above can be sidestepped by anyone who
+   * can change address — a mobile network, a proxy, a forged header on a host
+   * that does not overwrite it. This one cannot: it counts failures against the
+   * account itself, so rotating addresses buys nothing.
+   */
+  const accountLock = await emailLockState(parsed.data.email.trim().toLowerCase());
+  if (accountLock.locked && accountLock.until) {
+    return {
+      error: `Too many failed attempts on this account. Try again in ${minutesRemaining(accountLock.until)} minutes, or reset the password.`,
     };
   }
 
