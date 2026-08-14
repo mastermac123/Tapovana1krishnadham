@@ -192,7 +192,9 @@ export default function Hero({ photo }: { photo?: string }) {
               color: '#B08D57',
             }}
           >
-            Registered 2002 &middot; Seventy&#8209;two flats on a single wing
+            {/* The count moved into the headline, so this carries when and
+                where instead of repeating it. */}
+            Registered 2002 &middot; Rani Sati Marg Extn., Malad (E)
           </span>
           <h1
             data-hero-head
@@ -206,7 +208,7 @@ export default function Hero({ photo }: { photo?: string }) {
               letterSpacing: '-0.02em',
             }}
           >
-            <WordRise text="A house that keeps its own records." />
+            <WordRise text="Home to seventy‑two families." />
           </h1>
         </div>
 
