@@ -28,8 +28,24 @@ const REGISTRATION = [
   { label: 'Registration number', value: 'Mum/W.P./HSG/TC/11827/2002‑03' },
   { label: 'Date of registration', value: '11 December 2002' },
   { label: 'Members', value: 'Seventy‑two flats, ground plus seven floors' },
-  { label: 'Land held', value: '3,935.33 sq. m. in the society’s possession' },
 ];
+
+/**
+ * The land, itemised.
+ *
+ * A single total invites the question "made up of what?", and for a society
+ * heading into redevelopment that question matters: the recreation ground, the
+ * undivided share of the internal road and the setback are each held on
+ * different terms. The four figures add to 3,935.33 exactly.
+ */
+const LAND = [
+  { label: 'Society land', value: '2,954.06' },
+  { label: 'Recreation ground', value: '565.23' },
+  { label: 'Undivided right in internal road land', value: '248.89' },
+  { label: 'Road setback area', value: '167.15' },
+];
+
+const LAND_TOTAL = '3,935.33';
 
 export default function AboutPage() {
   return (
@@ -83,12 +99,10 @@ export default function AboutPage() {
               textWrap: 'pretty',
             }}
           >
-            The society holds 3,935.33 square metres in all &mdash; the plot itself,
-            its recreation ground, an undivided share of the internal road and the
-            road setback. It is administered by an elected managing committee that
-            meets through the year and reports to the general body. Its present work
-            is the redevelopment of the wing, conducted through open tender, with
-            every quotation and set of minutes published on this site.
+            It is administered by an elected managing committee that meets through
+            the year and reports to the general body. Its present work is the
+            redevelopment of the wing, conducted through open tender, with every
+            quotation and set of minutes published on this site.
           </p>
         </Reveal>
       </section>
@@ -120,6 +134,105 @@ export default function AboutPage() {
             </span>
           </Reveal>
         </div>
+      </section>
+
+      <section
+        className="section-split section-split--inner"
+        style={{ borderBottom: '1px solid #E2DDD2' }}
+      >
+        <Reveal>
+          <span style={eyebrow}>Land</span>
+        </Reveal>
+
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {LAND.map((item) => (
+            <Reveal key={item.label} className="detail-row">
+              <span className="detail-row__label">{item.label}</span>
+              <span className="detail-row__value" style={{ fontSize: 22 }}>
+                {item.value}
+                <span
+                  style={{
+                    marginLeft: 10,
+                    fontSize: 12.5,
+                    fontWeight: 300,
+                    color: '#5C5A55',
+                  }}
+                >
+                  sq. m.
+                </span>
+              </span>
+            </Reveal>
+          ))}
+
+          <Reveal
+            className="detail-row"
+            style={{ borderTop: '1px solid #17342C', borderBottom: '1px solid #E2DDD2' }}
+          >
+            <span className="detail-row__label" style={{ color: '#17342C' }}>
+              Total in society possession
+            </span>
+            <span className="detail-row__value">
+              {LAND_TOTAL}
+              <span
+                style={{
+                  marginLeft: 10,
+                  fontSize: 12.5,
+                  fontWeight: 300,
+                  color: '#5C5A55',
+                }}
+              >
+                sq. m.
+              </span>
+            </span>
+          </Reveal>
+        </div>
+      </section>
+
+      <section
+        className="section-split section-split--inner"
+        style={{ borderBottom: '1px solid #E2DDD2' }}
+      >
+        <Reveal>
+          <span style={eyebrow}>What a society is</span>
+        </Reveal>
+
+        <Reveal
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 34,
+            maxWidth: 720,
+          }}
+        >
+          <p
+            style={{
+              margin: 0,
+              fontSize: 19,
+              fontWeight: 300,
+              lineHeight: 1.8,
+              color: '#3A3833',
+              textWrap: 'pretty',
+            }}
+          >
+            A society is a group of people who live in a shared place, keep common
+            relationships, and follow the same rules and culture. It is a collection
+            of individuals united by certain relations and ways of behaving, who
+            share that culture and deal with one another daily.
+          </p>
+          <p
+            style={{
+              margin: 0,
+              fontSize: 16.5,
+              fontWeight: 300,
+              lineHeight: 1.85,
+              color: '#5C5A55',
+              textWrap: 'pretty',
+            }}
+          >
+            It relies on connection, communication and cooperation &mdash; to help
+            the people in it survive, grow, and live together peacefully.
+          </p>
+        </Reveal>
       </section>
 
       <MapBand height={560} style={{ borderBottom: '1px solid #E2DDD2' }} />
