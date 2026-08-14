@@ -58,30 +58,17 @@ export default async function HomePage() {
           <span style={eyebrow}>01 &mdash; The society</span>
         </Reveal>
 
+        {/* No display heading here on purpose. A second large line so soon
+            after the hero competed with it and said less; the eyebrow and the
+            paragraph carry the section between them. The rule that used to
+            divide heading from prose went with it — there is nothing left for
+            it to divide. */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 60 }}>
-          <Reveal>
-            <h2
-              style={{
-                margin: 0,
-                maxWidth: 900,
-                fontFamily: 'var(--font-display)',
-                fontWeight: 300,
-                fontSize: 'var(--text-display-m)',
-                lineHeight: 1.06,
-                letterSpacing: '-0.015em',
-              }}
-            >
-              <WordRise text="One wing on a quiet lane, held in common by the families who live in it." />
-            </h2>
-          </Reveal>
-
           <Reveal
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
               gap: 'clamp(40px, 6vw, 90px)',
-              paddingTop: 44,
-              borderTop: '1px solid #E2DDD2',
             }}
           >
             <p
