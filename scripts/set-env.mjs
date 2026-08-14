@@ -42,8 +42,12 @@ const PROMPTS = {
   DATABASE_URL: 'Neon — pooled connection string (host contains "-pooler")',
   SEED_SECRETARY_EMAIL: 'Secretary sign-in email',
   SEED_SECRETARY_PASSWORD: 'Secretary password (12+ characters)',
-  RESEND_API_KEY: 'Resend API key, starts re_ (password-reset email) — blank to skip',
-  EMAIL_FROM: 'Send FROM — onboarding@resend.dev until you own a domain',
+  // Either provider works; Brevo is preferred because it verifies a single
+  // sender address rather than a whole domain, and so can deliver to whatever
+  // address the next secretary uses. Leave the other blank.
+  BREVO_API_KEY: 'Brevo API key, starts xkeysib- (reset email) — blank to skip',
+  RESEND_API_KEY: 'Resend API key, starts re_ — blank if using Brevo',
+  EMAIL_FROM: 'Send FROM — the address verified with your provider',
 };
 
 /** Shows enough to confirm the right thing landed, never the whole value. */
@@ -113,8 +117,12 @@ for (const [key, label] of Object.entries(PROMPTS)) {
   console.log('');
 
   if (!answer) {
-    // Email is optional until the society sets up a sender.
-    const optional = key === 'BREVO_API_KEY' || key === 'EMAIL_FROM';
+    // Mail is optional until the society sets up a sender, and only one of the
+    // two providers is ever needed.
+    const optional =
+      key === 'BREVO_API_KEY' ||
+      key === 'RESEND_API_KEY' ||
+      key === 'EMAIL_FROM';
     if (!current && !optional) problems.push(`${key} left empty`);
     continue;
   }

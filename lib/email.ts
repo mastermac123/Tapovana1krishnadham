@@ -1,21 +1,33 @@
 import 'server-only';
 
 /**
- * Outgoing mail, over Resend's HTTP API.
+ * Outgoing mail. Two providers, whichever is configured.
  *
- * Plain fetch, no SDK: the API is one POST, and an unused SDK is one more
- * dependency to keep patched. To move provider later, only `send` changes.
+ * Plain fetch, no SDK: each API is one POST, and an unused SDK is one more
+ * dependency to keep patched.
  *
- * SENDER, AND THE LIMIT THAT COMES WITH IT
- * Resend will only send *from* a domain you have verified by DNS. Until the
- * society owns one, the fallback is Resend's shared `onboarding@resend.dev`,
- * which may only deliver *to* the address the Resend account was opened with.
- * That is enough here — there is exactly one secretary account — but it stops
- * working the day the sign-in address changes to a new secretary's. At that
- * point the society needs a domain. See EMAIL_FROM in .env.local.
+ * WHY THERE ARE TWO
+ * Resend will only send *from* a domain verified by DNS. Without one the
+ * fallback is its shared `onboarding@resend.dev`, which delivers only *to* the
+ * address the Resend account was opened with. That held while the secretary
+ * signed in with that same address — and broke the moment the sign-in address
+ * changed, because reset codes were accepted by the API and then silently went
+ * nowhere. A password reset that cannot reach the new secretary is not a
+ * password reset.
+ *
+ * Brevo verifies a single sender *address* rather than a whole domain, and
+ * will then deliver to anyone. That is what makes reset work for whatever
+ * address the society elects next, without owning a domain.
+ *
+ * Brevo wins when both are set, since only it can reach an arbitrary
+ * recipient. A domain is still the better answer eventually: mail sent from a
+ * verified society domain lands in inboxes rather than spam folders, which
+ * matters more as the committee writes to seventy-two people.
  */
 
-const ENDPOINT = 'https://api.resend.com/emails';
+const RESEND_ENDPOINT = 'https://api.resend.com/emails';
+const BREVO_ENDPOINT = 'https://api.brevo.com/v3/smtp/email';
+const SENDER_NAME = 'Tapovan A-1 Krishnadham';
 
 export type Mail = {
   to: string;
@@ -24,28 +36,44 @@ export type Mail = {
   html: string;
 };
 
-export function emailConfigured(): boolean {
-  return Boolean(process.env.RESEND_API_KEY && process.env.EMAIL_FROM);
+/** Which provider will be used, if any. */
+export function emailProvider(): 'brevo' | 'resend' | null {
+  if (!process.env.EMAIL_FROM) return null;
+  if (process.env.BREVO_API_KEY) return 'brevo';
+  if (process.env.RESEND_API_KEY) return 'resend';
+  return null;
 }
 
-async function send(mail: Mail): Promise<void> {
-  const key = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM;
+export function emailConfigured(): boolean {
+  return emailProvider() !== null;
+}
 
-  if (!key || !from) {
-    throw new Error(
-      'RESEND_API_KEY and EMAIL_FROM are not set. Run scripts/set-env.mjs.'
-    );
-  }
-
-  const response = await fetch(ENDPOINT, {
+async function sendViaBrevo(mail: Mail, key: string, from: string) {
+  const response = await fetch(BREVO_ENDPOINT, {
     method: 'POST',
-    headers: {
-      authorization: `Bearer ${key}`,
-      'content-type': 'application/json',
-    },
+    headers: { 'api-key': key, 'content-type': 'application/json' },
     body: JSON.stringify({
-      from: `Tapovan A-1 Krishnadham <${from}>`,
+      sender: { name: SENDER_NAME, email: from },
+      to: [{ email: mail.to }],
+      subject: mail.subject,
+      textContent: mail.text,
+      htmlContent: mail.html,
+    }),
+  });
+
+  if (!response.ok) {
+    // Brevo names the reason — commonly an unverified sender address.
+    const detail = await response.text().catch(() => '');
+    throw new Error(`Brevo refused the message (${response.status}): ${detail}`);
+  }
+}
+
+async function sendViaResend(mail: Mail, key: string, from: string) {
+  const response = await fetch(RESEND_ENDPOINT, {
+    method: 'POST',
+    headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
+    body: JSON.stringify({
+      from: `${SENDER_NAME} <${from}>`,
       to: [mail.to],
       subject: mail.subject,
       text: mail.text,
@@ -54,10 +82,26 @@ async function send(mail: Mail): Promise<void> {
   });
 
   if (!response.ok) {
-    // Resend's body names the reason — an unverified domain, or a recipient
-    // the shared sender is not allowed to reach.
     const detail = await response.text().catch(() => '');
     throw new Error(`Resend refused the message (${response.status}): ${detail}`);
+  }
+}
+
+async function send(mail: Mail): Promise<void> {
+  const from = process.env.EMAIL_FROM;
+  const provider = emailProvider();
+
+  if (!from || !provider) {
+    throw new Error(
+      'No mail provider is configured. Set EMAIL_FROM and either BREVO_API_KEY ' +
+        'or RESEND_API_KEY — run scripts/set-env.mjs.'
+    );
+  }
+
+  if (provider === 'brevo') {
+    await sendViaBrevo(mail, process.env.BREVO_API_KEY!, from);
+  } else {
+    await sendViaResend(mail, process.env.RESEND_API_KEY!, from);
   }
 }
 
