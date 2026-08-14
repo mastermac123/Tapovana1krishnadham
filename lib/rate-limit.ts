@@ -102,9 +102,22 @@ export const EMAIL_WINDOW_MINUTES = 15;
 export async function emailLockState(email: string): Promise<LockState> {
   const since = new Date(Date.now() - EMAIL_WINDOW_MINUTES * 60_000);
 
+  /**
+   * Bounded on purpose, and not only for speed.
+   *
+   * Without a `take`, this reads every attempt recorded against the address in
+   * the window — so a real account, which has history, costs measurably more to
+   * check than one that has never been seen. That difference is visible from
+   * outside as a slower response, which turns the sign-in form into a way to
+   * discover which addresses exist. Reading a fixed number of rows makes both
+   * cost the same.
+   *
+   * One more than the limit is all the decision needs.
+   */
   const recent = await db.loginAttempt.findMany({
     where: { email, createdAt: { gte: since } },
     orderBy: { createdAt: 'desc' },
+    take: EMAIL_FAILURE_LIMIT + 1,
     select: { success: true, createdAt: true },
   });
 

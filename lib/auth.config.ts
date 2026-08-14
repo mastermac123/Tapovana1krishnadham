@@ -41,11 +41,18 @@ export const authConfig = {
       return Boolean(auth?.user);
     },
     jwt({ token, user }) {
-      if (user) token.sub = user.id;
+      if (user) {
+        token.sub = user.id;
+        // Carried, not checked, here: this callback also runs on the edge,
+        // where there is no database to compare it against. app/desk/layout.tsx
+        // does the comparing.
+        token.pv = user.pv;
+      }
       return token;
     },
     session({ session, token }) {
       if (token.sub) session.user.id = token.sub;
+      session.user.pv = token.pv;
       return session;
     },
   },

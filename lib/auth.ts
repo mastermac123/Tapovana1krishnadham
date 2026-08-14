@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { hash, verify } from '@node-rs/argon2';
@@ -31,6 +33,22 @@ export const credentialsSchema = z.object({
   email: z.email().max(200),
   password: z.string().min(1).max(400),
 });
+
+/**
+ * A short, non-reversible marker for "the password as it was at sign-in".
+ *
+ * Sessions are JWTs, so nothing about them is stored server-side and there is
+ * no list of live sessions to revoke. Without this, changing the password does
+ * not evict anyone already signed in — a stolen laptop or a borrowed session
+ * keeps working until the eight hours run out, which is exactly when the
+ * secretary believes they have just shut it down.
+ *
+ * Hashing the stored hash means the token never carries anything that could be
+ * attacked offline, while still changing whenever the password does.
+ */
+export function passwordFingerprint(passwordHash: string): string {
+  return createHash('sha256').update(passwordHash).digest('hex').slice(0, 16);
+}
 
 /**
  * A valid hash to check against when the email does not exist.
@@ -95,7 +113,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         await recordAttempt(ip, email, success);
 
         if (!success || !secretary) return null;
-        return { id: secretary.id, email: secretary.email };
+        return {
+          id: secretary.id,
+          email: secretary.email,
+          pv: passwordFingerprint(secretary.passwordHash),
+        };
       },
     }),
   ],

@@ -43,25 +43,32 @@ export async function requestCode(
     };
   }
 
-  if (await tooManyRequests(email)) {
-    // Still a refusal, but an honest one — this leaks nothing about the
-    // address, only that this form has been used a lot.
-    return { error: 'Too many codes requested. Try again in an hour.' };
-  }
-
+  /**
+   * The rate limit must not become an account-existence oracle.
+   *
+   * A non-existent address never creates a passwordReset row, so
+   * tooManyRequests can only ever be true for a real account. Surfacing that
+   * as a distinct "too many" message told an attacker which addresses exist —
+   * the precise thing the identical-response design below is meant to stop.
+   *
+   * So a rate-limited request returns the *same* success shape and simply does
+   * not send. A legitimate user who asks more than three times in an hour is
+   * told a code is on its way and does not receive one; the alternative leaks
+   * more than that edge case is worth.
+   */
   const secretary = await db.secretary.findUnique({ where: { email } });
 
-  if (secretary) {
+  if (secretary && !(await tooManyRequests(email))) {
     try {
       const code = await issueCode(email, ip);
       await sendResetCode(email, code);
     } catch (e) {
       console.error('reset code not sent', e);
-      return { error: 'That code could not be sent. Try again shortly.' };
+      // Still identical to the caller — the failure is ours, not theirs.
     }
   }
 
-  // Identical response whether or not the account exists.
+  // Identical response whether or not the account exists, or was throttled.
   return { sent: SENT_MESSAGE, email };
 }
 
