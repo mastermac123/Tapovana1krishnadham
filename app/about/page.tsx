@@ -50,13 +50,10 @@ const LAND_TOTAL = '3,935.33';
 export default function AboutPage() {
   return (
     <>
-      <PageHeader
-        eyebrow="About us"
-        /* Phrased by date rather than by a count of years, so it cannot quietly
-           go stale on an anniversary the way "Twenty-three years" would. */
-        title={'On the same lane since 2002.'}
-        maxWidth={900}
-      />
+      {/* No display line here: the page opens on the eyebrow alone and lets the
+          History section speak first. PageHeader promotes the eyebrow to the
+          h1 when no title is given, so the page keeps a proper heading. */}
+      <PageHeader eyebrow="About us" />
 
       <section
         className="section-split section-split--inner"
