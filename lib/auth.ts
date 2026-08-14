@@ -73,7 +73,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(raw, request) {
         const parsed = credentialsSchema.safeParse(raw);
-        if (!parsed.success) return null;
+        if (!parsed.success) {
+          // Counted for the same reason as in the login action: input that
+          // fails the schema is still someone trying the door.
+          await recordAttempt(clientIp(request.headers), null, false);
+          return null;
+        }
 
         const email = parsed.data.email.trim().toLowerCase();
         const ip = clientIp(request.headers);

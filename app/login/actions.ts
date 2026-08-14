@@ -39,6 +39,23 @@ export async function login(
   const ip = clientIp(await headers());
 
   if (!parsed.success) {
+    /**
+     * Recorded, not waved through.
+     *
+     * This used to return without counting, which meant anything that failed
+     * the schema — a malformed address, an empty password — was a free attempt.
+     * Someone hammering the form with junk never approached the lock, and a
+     * person mistyping their address genuinely wondered why three wrong tries
+     * produced no lockout at all. A refused attempt is an attempt.
+     */
+    const attempted = formData.get('email');
+    await recordAttempt(
+      ip,
+      typeof attempted === 'string' && attempted.length <= 200
+        ? attempted.trim().toLowerCase()
+        : null,
+      false
+    );
     return { error: 'Enter a registered email address and your password.' };
   }
 
