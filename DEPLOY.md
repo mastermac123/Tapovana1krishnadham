@@ -53,6 +53,37 @@ forge their address and walk past the sign-in lockout.
 
 ---
 
+## Why vercel.json pins the region
+
+`vercel.json` holds one setting, `"regions": ["sin1"]`, and it matters more than
+its size suggests.
+
+Vercel defaults to Washington (`iad1`). Neon sits in Singapore
+(`ap-southeast-1`). Left alone, every database query crossed the Pacific twice
+at roughly 250ms a time — measured on the live site, the notice board took 2.1
+seconds and a sign-in attempt 3.8, while the static pages, which touch no data,
+answered in 50ms. The response header said it plainly: `bom1::iad1` — entering
+at the Mumbai edge, executing in Washington.
+
+`sin1` is Singapore, the same city as the database. Mumbai (`bom1`) would sit
+closer to the residents, but a page makes many database calls and only one trip
+back to the reader, so proximity to the data wins.
+
+Keep the file free of `"//"` comment keys. JSON has no comments, Vercel
+validates this file against a schema, and a rejected `vercel.json` can fail a
+deployment without a clear error.
+
+Check it took effect by reading the header of a *dynamic* page — a static one is
+served from the edge cache and only shows the edge:
+
+```bash
+curl -sI https://YOUR-PROJECT.vercel.app/notices | grep x-vercel-id
+```
+
+The second segment is where the code ran. It should say `sin1`.
+
+---
+
 ## 3. Tell R2 about the new origin — easy to forget
 
 Uploads go **browser → R2 directly**, so Cloudflare must be told the new domain

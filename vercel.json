@@ -1,20 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-
-  "//": [
-    "Run next to the database.",
-    "",
-    "Vercel defaults to washington (iad1) while Neon sits in singapore",
-    "(ap-southeast-1), so every query crossed the pacific twice - about 250ms",
-    "each. The notice board reads several times and took two seconds; signing",
-    "in, which checks three throttle tables before it even verifies a password,",
-    "took nearly four.",
-    "",
-    "sin1 is singapore, the same city as the database, which turns those",
-    "round trips into single-digit milliseconds. Mumbai (bom1) would sit closer",
-    "to the residents, but a page makes many database calls and only one trip",
-    "back to the reader, so being close to the data wins. The edge still",
-    "terminates in Mumbai either way, and static pages are cached there."
-  ],
   "regions": ["sin1"]
 }
